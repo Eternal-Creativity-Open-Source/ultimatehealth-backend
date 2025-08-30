@@ -570,9 +570,359 @@ router.put('/articles/:id',authenticateToken, articleController.updateArticle);
  */
 router.delete('/articles/:id',authenticateToken, articleController.deleteArticle);
 
+
+/**
+ * @openapi
+ * /articles/saveArticle:
+ *   post:
+ *     summary: Save or unsave a published article
+ *     description: >
+ *       This endpoint allows an authenticated user to save or unsave a published article. If the article is already saved, it will be unsaved, and vice versa.
+ *       The user must be authenticated and the article must be published. A user can save or unsave an article by providing its ID.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: [] 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - article_id
+ *             properties:
+ *               article_id:
+ *                 type: string
+ *                 description: The unique ID of the article to be saved or unsaved.
+ *                 example: "12345"
+ *     responses:
+ *       '200':
+ *         description: Article successfully saved or unsaved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Article saved successfully"  # or "Article unsaved"
+ *       '400':
+ *         description: Invalid input or article not published
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User ID and Article ID are required"  # or "Article is not published"
+ *       '401':
+ *         description: Unauthorized - User must be authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       '403':
+ *         description: User is banned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User is banned"
+ *       '404':
+ *         description: User or article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User or article not found"
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error saving article"
+ */
+
 router.post('/articles/saveArticle', authenticateToken, articleController.saveArticle); 
+
+/**
+ * @openapi
+ * /articles/likeArticle:
+ *   post:
+ *     summary: Like or unlike a published article
+ *     description: >
+ *       This endpoint allows an authenticated user to like or unlike a published article.  
+ *       If the article is already liked by the user, the like will be removed.  
+ *       Only active users can perform this action on published articles.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: [] 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - article_id
+ *             properties:
+ *               article_id:
+ *                 type: string
+ *                 example: "12345"
+ *     responses:
+ *       '200':
+ *         description: Article liked or unliked successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article liked successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     article:
+ *                       type: object
+ *                     likeStatus:
+ *                       type: boolean
+ *                       example: true
+ *       '400':
+ *         description: Missing article ID or article is not published
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article is not published
+ *       '401':
+ *         description: Unauthorized - JWT missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '403':
+ *         description: User is blocked or banned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User is blocked or banned
+ *       '404':
+ *         description: Article or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User or Article not found
+ *       '500':
+ *         description: Server error during like/unlike operation
+ */
+
 router.post('/articles/likeArticle', authenticateToken, articleController.likeArticle ); 
+
+/**
+ * @openapi
+ * /articles/updateViewCount:
+ *   post:
+ *     summary: Update view count for a published article
+ *     description: >
+ *       This endpoint allows an authenticated user to increase the view count of a **published** article.  
+ *       A user can only contribute **once** to the view count of a specific article.  
+ *       The article must be in a `PUBLISHED` state, and the user must not be blocked or banned.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: []  # JWT Bearer token required
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - article_id
+ *             properties:
+ *               article_id:
+ *                 type: string
+ *                 description: The ID of the article to update the view count for.
+ *                 example: "64f1b90e1a543a001fcd4567"
+ *     responses:
+ *       '200':
+ *         description: View count updated or article already viewed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article view count updated
+ *                 article:
+ *                   type: object
+ *                   $ref: '#/components/schemas/Article'
+ *                   description: The article object with updated view count
+ *       '400':
+ *         description: Article is not published
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article is not published
+ *       '401':
+ *         description: Unauthorized - JWT token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '403':
+ *         description: Forbidden - User is blocked or banned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User is blocked or banned
+ *       '404':
+ *         description: Article or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User or Article not found
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error updating view
+ */
 router.post('/articles/updateViewCount', authenticateToken, articleController.updateViewCount );
+
+
+/**
+ * @openapi
+ * /article/readEvent:
+ *   post:
+ *     summary: Record a read event for an article
+ *     description: >
+ *       This endpoint allows the frontend to update a user's read activity for an article.  
+ *       It is **conditionally called** by the client when it determines that the user has **read enough of the article**.  
+ *       
+ *       It aggregates read counts by **day, month, and year** per user.  
+ *       If the user has not logged a read today, a new record will be created. Otherwise, it updates the existing one.
+ *       
+ *       Requires a valid JWT token.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: []  # Bearer authentication (JWT token)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - article_id
+ *             properties:
+ *               article_id:
+ *                 type: string
+ *                 description: The ID of the article that was read.
+ *                 example: "64f1b90e1a543a001fcd4567"
+ *     responses:
+ *       '201':
+ *         description: Read event recorded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Read Event Saved
+ *                 event:
+ *                   type: object
+ *                   description: The read aggregate record for the user
+ *                   $ref: '#/components/schemas/ReadAggregate'
+ *       '400':
+ *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Article ID is required
+ *       '401':
+ *         description: Unauthorized - JWT token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '500':
+ *         description: Server error while saving read event
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 router.post('/article/readEvent', authenticateToken, articleController.updateReadEvents);
 
 /**
@@ -586,6 +936,7 @@ router.get('/article/read-status', authenticateToken, articleController.getReadD
 router.get('/article/write-status', authenticateToken, articleController.getWriteDataForGraphs );
 
 router.post('/article/repost', authenticateToken, articleController.repostArticle);
+
 router.get('/article/improvements', authenticateToken, articleController.getAllImprovementsForUser);
 router.get('/user-articles',authenticateToken,articleController.getAllArticlesForUser);
 router.get('/get-improvement/:reqid', authenticateToken, articleController.getImprovementById);
