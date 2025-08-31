@@ -935,10 +935,363 @@ router.get('/article/read-status', authenticateToken, articleController.getReadD
  */
 router.get('/article/write-status', authenticateToken, articleController.getWriteDataForGraphs );
 
+/**
+ * @openapi
+ * /article/repost:
+ *   post:
+ *     summary: Repost a published article
+ *     description: |
+ *       Allows an authenticated user to repost a published article.
+ *       If already reposted, the article is moved to the top of the user's repost list.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - articleId
+ *             properties:
+ *               articleId:
+ *                 type: integer
+ *                 example: 123
+ *     responses:
+ *       200:
+ *         description: Article reposted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article reposted successfully
+ *       400:
+ *         description: Bad request - missing or invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Article ID is required.
+ *       401:
+ *         description: Unauthorized - JWT token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden - user is blocked or banned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You are blocked or banned.
+ *       404:
+ *         description: Not found - article or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Article or user not found.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
 router.post('/article/repost', authenticateToken, articleController.repostArticle);
 
+/**
+ * @openapi
+ * /article/improvements:
+ *   get:
+ *     summary: Get all improvements (edit requests) for the authenticated user
+ *     description: |
+ *       Returns a paginated list of improvements (edit requests) for the logged-in user, filtered by status.
+ *       - `status=1`: Published
+ *       - `status=2`: In Progress / Review Pending / Awaiting User / Unassigned
+ *       - `status=3`: Discarded
+ *       If `visit=1` and `page=1`, it also returns counts for each status.
+ *     tags:
+ *       - ArticlesEditRequest
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of records per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           enum: [1, 2, 3]
+ *         description: Status filter (1 = Published, 2 = In Progress, 3 = Discarded)
+ *       - in: query
+ *         name: visit
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Include status counters (only on page 1)
+ *     responses:
+ *       200:
+ *         description: List of improvements
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 articles:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: Edit request object with populated article and tags
+ *                     $ref: '#/components/schemas/EditRequest'
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 5
+ *                 publishedCount:
+ *                   type: integer
+ *                   example: 20
+ *                 progressCount:
+ *                   type: integer
+ *                   example: 10
+ *                 discardCount:
+ *                   type: integer
+ *                   example: 5
+ *       401:
+ *         description: Unauthorized - JWT token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       400:
+ *         description: Missing user ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User ID is required.
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
 router.get('/article/improvements', authenticateToken, articleController.getAllImprovementsForUser);
+
+/**
+ * @openapi
+ * /user-articles:
+ *   get:
+ *     summary: Get all articles for the authenticated user
+ *     description: |
+ *       Returns a paginated list of articles created by the logged-in user.
+ *       The articles can be filtered by status:
+ *         - `status=1`: Published
+ *         - `status=2`: In Progress / Review Pending / Awaiting User / Unassigned
+ *         - `status=3`: Discarded
+ *       If `visit=1` and `page=1`, it also returns total counts for each status.
+ *     tags:
+ *       - Articles
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of articles per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           enum: [1, 2, 3]
+ *         description: |
+ *           Article status filter:
+ *             - 1 = Published
+ *             - 2 = In Progress / Awaiting User / Review Pending / Unassigned
+ *             - 3 = Discarded
+ *       - in: query
+ *         name: visit
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: If set to 1 and page is 1, returns total status counts
+ *     responses:
+ *       200:
+ *         description: List of articles with optional status counts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 articles:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: Article object with populated tags, mentionedUsers, and likedUsers
+ *                     $ref: '#/components/schemas/Article'
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 5
+ *                 publishedCount:
+ *                   type: integer
+ *                   example: 10
+ *                 progressCount:
+ *                   type: integer
+ *                   example: 5
+ *                 discardCount:
+ *                   type: integer
+ *                   example: 2
+ *       401:
+ *         description: Unauthorized - JWT token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error fetching articles
+ *                 details:
+ *                   type: string
+ *                   example: Unexpected database error
+ */
+
 router.get('/user-articles',authenticateToken,articleController.getAllArticlesForUser);
+
+/**
+ * @openapi
+ * /get-improvement/{reqid}:
+ *   get:
+ *     summary: Get improvement request by ID
+ *     description: |
+ *       Retrieves a specific improvement (edit request) by its ID for an authenticated user.
+ *       Returns the associated article with populated tags.
+ *     tags:
+ *       - ArticlesEditRequest
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: reqid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the improvement request (EditRequest)
+ *     responses:
+ *       200:
+ *         description: Improvement request found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               description: Edit request object with article and tags
+ *               $ref: '#/components/schemas/EditRequest'
+ *       400:
+ *         description: Request ID is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Request ID is required
+ *       401:
+ *         description: Unauthorized - missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Article not found (e.g., removed)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Article not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 router.get('/get-improvement/:reqid', authenticateToken, articleController.getImprovementById);
 
 

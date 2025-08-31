@@ -11,6 +11,7 @@ const options = {
       title: 'API Documentation- UltimateHealth',
       version: '1.0.0',
     },
+ 
     servers: [{ url: `${url}:${port}/api` }],
     components: {
       securitySchemes: {
