@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 const sendVerificationEmail = (email, token, isAdmin) => {
 
-  const url = `${process.env.BASE_URL}api/user/verifyEmail?token=${token}&isAdmin=${isAdmin}`;
+  const url = `${process.env.PROD_URL}api/user/verifyEmail?token=${token}&isAdmin=${isAdmin}`;
   console.log("URL", url);
   const mailOptions = {
     from: process.env.EMAIL_USER,

@@ -1,7 +1,7 @@
 
 const swaggerJsdoc = require('swagger-jsdoc');
 const port = process.env.PORT | 8080;
-const url = process.env.BASE_URL;
+const url = process.env.PROD_URL;
 
 
 const options = {
@@ -12,7 +12,7 @@ const options = {
       version: '1.0.0',
     },
 
-    servers: [{ url: `${url}:${port}/api` }],
+    servers: [{ url: `${url}/api` }],
     components: {
       securitySchemes: {
         bearerAuth: {
