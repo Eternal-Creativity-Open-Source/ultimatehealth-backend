@@ -298,9 +298,10 @@ module.exports.submitSuggestedChanges = expressAsyncHandler(
 
         try {
 
-            const [article, user] = await Promise.all(
+            const [article, user] = await Promise.all([
                 Article.findById(Number(articleId)),
                 User.findById(userId)
+            ]
             );
 
             if (!article || !user || article.is_removed) {
