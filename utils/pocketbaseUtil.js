@@ -38,7 +38,10 @@ const authenticateAdmin = async (pb) => {
 
     try {
 
-        pb.authStore.clear();
+        if(pb && pb.authStore){
+          pb.authStore.clear();
+        }
+      
         const authData = await pb.admins.authWithPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
         //const authData = await pb.collection('users').authWithPassword('test@example.com', '1234567890');
         console.log('✅ Admin authenticated');
@@ -77,7 +80,7 @@ const deleteArticleRecordFromPocketbase = async (record_id) => {
         return;
     }
     try {
-        const pb = getPocketbaseClient();
+        const pb = await getPocketbaseClient();
         await authenticateAdmin(pb);
         const articleRecord = await pb.collection('content').get(record_id);
 
