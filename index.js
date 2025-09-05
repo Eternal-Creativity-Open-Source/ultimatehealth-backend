@@ -821,7 +821,7 @@ io.on('connection', (socket) => {
             article.pb_recordId,
             null,
             "New feedback on your article: ",
-            comment.content,
+            article.title,
         );
         // send mail
         sendArticleFeedbackEmail(article.authorId.email, feedback, article.title);
