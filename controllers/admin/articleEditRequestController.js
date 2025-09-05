@@ -81,7 +81,7 @@ module.exports.getAllImprovementsForReview = expressAsyncHandler(
             const { page = 1, limit = 10 } = req.query;
             const skip = (Number(page) - 1) * parseInt(limit);
 
-            const articles = await EditRequest.find({ status: statusEnum.statusEnum.UNASSIGNED }).populate({
+            let articles = await EditRequest.find({ status: statusEnum.statusEnum.UNASSIGNED }).populate({
                 path: 'article',
                 populate: [
                     {
@@ -132,7 +132,7 @@ module.exports.getAllInProgressImprovementsForAdmin = expressAsyncHandler(
             return res.status(400).json({ message: 'Reviewer ID is required.' });
         }
         try {
-            const articles = await EditRequest.find({
+            let articles = await EditRequest.find({
                 reviewer_id: reviewer_id, status: {
                     $in: [statusEnum.statusEnum.IN_PROGRESS, statusEnum.statusEnum.AWAITING_USER, statusEnum.statusEnum.REVIEW_PENDING]
                 }
@@ -188,7 +188,7 @@ module.exports.getAllCompletedImprovementsForAdmin = expressAsyncHandler(
             return res.status(400).json({ message: 'Reviewer ID is required.' });
         }
         try {
-            const articles = await EditRequest.find({
+            let articles = await EditRequest.find({
                 reviewer_id: reviewer_id,
                 status: {
                     $in: [statusEnum.statusEnum.PUBLISHED]
