@@ -317,10 +317,12 @@ module.exports.submitSuggestedChanges = expressAsyncHandler(
             //console.log("Author Id", article.authorId);
             //console.log("User Id", userId);
 
+            /*
             if (article.authorId.toString() !== userId.toString()) {
                 res.status(403).json({ message: "You are not the author of this article" });
                 return;
             }
+                */
 
             article.content = content;
             article.title = title;
