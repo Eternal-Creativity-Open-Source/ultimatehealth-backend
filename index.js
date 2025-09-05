@@ -4,7 +4,7 @@ const expressAsyncHandler = require('express-async-handler');
 const compression = require('compression');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const {articleReviewNotificationsToUser} = require('./controllers/notifications/notificationHelper');
+const { articleReviewNotificationsToUser } = require('./controllers/notifications/notificationHelper');
 const sendArticleFeedbackEmail = require('./controllers/emailservice');
 const EditRequest = require('./models/admin/articleEditRequestModel');
 const Podcast = require('./models/Podcast');
@@ -784,216 +784,222 @@ io.on('connection', (socket) => {
                             .select('authorId reviewer_id is_removed review_comments pb_recordId title')
                             .populate('authorId', 'email _id')
                             .exec(),
-                    admin.findById(reviewer_id),
+                        admin.findById(reviewer_id),
                     ]);
 
-    if (!article || !reviewer || article.is_removed) {
-        socket.emit('error', { message: 'Article or Moderator not found' });
-        return;
-    }
+                    if (!article || !reviewer || article.is_removed) {
+                        socket.emit('error', { message: 'Article or Moderator not found' });
+                        return;
+                    }
 
-    if (article.reviewer_id.toString() !== reviewer._id.toString()) {
-        socket.emit('error', { message: 'You are not authorized to access this article' });
-        return;
-    }
+                    if (article.reviewer_id.toString() !== reviewer._id.toString()) {
+                        socket.emit('error', { message: 'You are not authorized to access this article' });
+                        return;
+                    }
 
-    if (isReview) {
-        const comment = new Comment({
-            adminId: reviewer._id,
-            articleId: article._id,
-            // parentCommentId: parentCommentId || null,
-            content: feedback,
-            isReview: true,
-            isNote: false
-        });
+                    if (isReview) {
+                        const comment = new Comment({
+                            adminId: reviewer._id,
+                            articleId: article._id,
+                            // parentCommentId: parentCommentId || null,
+                            content: feedback,
+                            isReview: true,
+                            isNote: false
+                        });
 
-        await comment.save();
-        article.review_comments.push(comment._id);
+                        await comment.save();
+                        article.review_comments.push(comment._id);
 
-        article.status = statusEnum.statusEnum.AWAITING_USER;
-        article.lastUpdated = new Date();
+                        article.status = statusEnum.statusEnum.AWAITING_USER;
+                        article.lastUpdated = new Date();
 
-        await article.save();
+                        await article.save();
 
-        socket.emit('new-feedback', comment);
-        // userId, articleId, articleRecordId, title, message
-        articleReviewNotificationsToUser(article.authorId._id, article._id,
-            article.pb_recordId,
-            null,
-            "New feedback on your article: ",
-            article.title,
-        );
-        // send mail
-        sendArticleFeedbackEmail(article.authorId.email, feedback, article.title);
+                        socket.emit('new-feedback', comment);
+                        // userId, articleId, articleRecordId, title, message
+                        articleReviewNotificationsToUser(article.authorId._id, article._id,
+                            article.pb_recordId,
+                            null,
+                            "New feedback on your article: ",
+                            article.title,
+                        );
+                        // send mail
+                        sendArticleFeedbackEmail(article.authorId.email, feedback, article.title);
 
-    } else if (isNote) {
+                    } else if (isNote) {
 
-        const comment = new Comment({
-            userId: article.authorId._id,
-            articleId: article._id,
-            parentCommentId: null,
-            content: feedback,
-            isNote: true,
-            isReview: false
-        });
-        await comment.save();
+                        const comment = new Comment({
+                            userId: article.authorId._id,
+                            articleId: article._id,
+                            parentCommentId: null,
+                            content: feedback,
+                            isNote: true,
+                            isReview: false
+                        });
+                        await comment.save();
 
-        article.review_comments.push(comment._id);
+                        article.review_comments.push(comment._id);
 
-        await article.save();
+                        await article.save();
 
-        //socket.emit('new-feedback', comment);
+                        //socket.emit('new-feedback', comment);
 
 
-        articleSubmitNotificationsToAdmin(
-            article.reviewer_id,
-            article._id,
-            article.pb_recordId,
-            null,
-            `New Additional Note from Author`,
-            `An author has added a new note to the article titled ${article.title}.`
-        );
-        socket.emit('new-feedback', comment);
-    }
-} else if (requestId) {
+                        articleSubmitNotificationsToAdmin(
+                            article.reviewer_id,
+                            article._id,
+                            article.pb_recordId,
+                            null,
+                            `New Additional Note from Author`,
+                            `An author has added a new note to the article titled ${article.title}.`
+                        );
+                        socket.emit('new-feedback', comment);
+                    }
+                } else if (requestId) {
 
-    const [editRequest, reviewer] = await Promise.all([
+                    const [editRequest, reviewer] = await Promise.all([
 
-        EditRequest.findById(requestId)
-            .populate('article')
-            .populate('user_id')
-            .exec(),
-        admin.findById(reviewer_id),
-    ]);
+                        EditRequest.findById(requestId)
+                            .populate('article')
+                            .populate('user_id')
+                            .exec(),
+                        admin.findById(reviewer_id),
+                    ]);
 
-    if (!editRequest || !reviewer) {
-        socket.emit('error', { message: 'Request or Moderator not found' });
-        return;
-    }
+                    if (!editRequest || !reviewer) {
+                        socket.emit('error', { message: 'Request or Moderator not found' });
+                        return;
+                    }
 
-    if (editRequest.reviewer_id !== reviewer._id) {
-        socket.emit('error', { message: 'You are not authorized to access this article' });
-        return;
-    }
+                    if (editRequest.reviewer_id !== reviewer._id) {
+                        socket.emit('error', { message: 'You are not authorized to access this article' });
+                        return;
+                    }
 
-    if (isReview) {
-        const comment = new Comment({
-            adminId: reviewer._id,
-            articleId: editRequest.article._id,
-            parentCommentId: null,
-            content: feedback,
-            isReview: true,
-            isNote: false
-        });
+                    if (isReview) {
+                        const comment = new Comment({
+                            adminId: reviewer._id,
+                            articleId: editRequest.article._id,
+                            parentCommentId: null,
+                            content: feedback,
+                            isReview: true,
+                            isNote: false
+                        });
 
-        await comment.save();
-        editRequest.editComments.push(comment._id);
+                        await comment.save();
+                        editRequest.editComments.push(comment._id);
 
-        editRequest.status = statusEnum.statusEnum.AWAITING_USER;
-        editRequest.last_updated = new Date();
+                        editRequest.status = statusEnum.statusEnum.AWAITING_USER;
+                        editRequest.last_updated = new Date();
 
-        await editRequest.save();
+                        await editRequest.save();
 
-        socket.emit('new-feedback', comment);
+                        socket.emit('new-feedback', comment);
 
-        // userId, articleId, articleRecordId, title, message
-        articleReviewNotificationsToUser(editRequest.user_id._id, editRequest.article._id,
-            editRequest.pb_recordId,
-            editRequest._id,
-            "New feedback on your improvement: ",
-            editRequest.title,
-        );
+                        // userId, articleId, articleRecordId, title, message
+                        articleReviewNotificationsToUser(editRequest.user_id._id, editRequest.article._id,
+                            editRequest.pb_recordId,
+                            editRequest._id,
+                            "New feedback on your improvement: ",
+                            editRequest.title,
+                        );
 
-        // send mail
-        sendArticleFeedbackEmail(editRequest.user_id.email, feedback, editRequest.article.title);
+                        // send mail
+                        sendArticleFeedbackEmail(editRequest.user_id.email, feedback, editRequest.article.title);
 
-    } else if (isNote) {
+                    } else if (isNote) {
 
-        const comment = new Comment({
-            userId: editRequest.user_id._id,
-            articleId: editRequest.article._id,
-            parentCommentId: null,
-            content: feedback,
-            isNote: true,
-            isReview: false
-        });
-        await comment.save();
+                        const comment = new Comment({
+                            userId: editRequest.user_id._id,
+                            articleId: editRequest.article._id,
+                            parentCommentId: null,
+                            content: feedback,
+                            isNote: true,
+                            isReview: false
+                        });
+                        await comment.save();
 
-        editRequest.editComments.push(comment._id);
+                        editRequest.editComments.push(comment._id);
 
-        await editRequest.save();
+                        await editRequest.save();
 
-        socket.emit('new-feedback', comment);
+                        socket.emit('new-feedback', comment);
 
-        articleSubmitNotificationsToAdmin(
-            editRequest.reviewer_id,
-            editRequest.article._id,
-            editRequest.pb_recordId,
-            editRequest._id,
-            `New Additional Note from Author`,
-            `An author has added a new note to the article titled ${editRequest.article.title}.`
-        );
+                        articleSubmitNotificationsToAdmin(
+                            editRequest.reviewer_id,
+                            editRequest.article._id,
+                            editRequest.pb_recordId,
+                            editRequest._id,
+                            `New Additional Note from Author`,
+                            `An author has added a new note to the article titled ${editRequest.article.title}.`
+                        );
 
-        socket.emit('new-feedback', comment);
-    }
-}
+                        socket.emit('new-feedback', comment);
+                    }
+                }
 
             } catch (err) {
-    console.log(err);
-    socket.emit('error', { message: err.message });
-}
+                console.log(err);
+                socket.emit('error', { message: err.message });
+            }
         }
 
     ));
-// load-review-comments (only article specific)
+    // load-review-comments (only article specific)
 
-socket.on('load-review-comments', expressAsyncHandler(
+    socket.on('load-review-comments', expressAsyncHandler(
 
-    async (data) => {
+        async (data) => {
 
-        const { articleId, requestId } = data;
+            const { articleId, requestId } = data;
 
-        if (!articleId && !requestId) {
-            socket.emit('error', { message: "Either Article Id or improvement request id required" });
-            return;
-        }
-
-        try {
-
-            if (articleId) {
-                const article = await Article.findById(Number(articleId)).populate('review_comments').exec();
-                if (article && article.review_comments && !article.is_removed) {
-
-                    article.review_comments = article.review_comments.filter(comment => !comment.is_removed);
-                    socket.emit('review-comments', article.review_comments);
-                }
-                else {
-                    socket.emit('error', { message: "Article not found" });
-                }
-            } else if (requestId) {
-
-                const requests = await EditRequest.findById(requestId).populate('editComments').exec();
-                if (requests && requests.editComments) {
-                    requests.editComments = requests.editComments.filter(comment => !comment.is_removed);
-                    socket.emit('review-comments', requests.editComments);
-                }
-                else {
-                    socket.emit('error', { message: "Improvement request not found" });
-                }
+            if (!articleId && !requestId) {
+                socket.emit('error', { message: "Either Article Id or improvement request id required" });
+                return;
             }
 
-        } catch (err) {
-            console.log(err);
-            socket.emit('error', { message: err.message });
+            try {
+
+                if (articleId) {
+                    const article = await Article.findById(Number(articleId))
+                        .populate({
+                            path: 'review_comments',
+                            options: { sort: { created_at: -1 } }
+                        })
+                        .exec();
+
+                    if (article && article.review_comments && !article.is_removed) {
+
+                        article.review_comments = article.review_comments.filter(comment => !comment.is_removed);
+                        socket.emit('review-comments', article.review_comments);
+                    }
+                    else {
+                        socket.emit('error', { message: "Article not found" });
+                    }
+                } else if (requestId) {
+
+                    const requests = await EditRequest.findById(requestId).populate('editComments').exec();
+                    if (requests && requests.editComments) {
+                        requests.editComments = requests.editComments.filter(comment => !comment.is_removed);
+                        socket.emit('review-comments', requests.editComments);
+                    }
+                    else {
+                        socket.emit('error', { message: "Improvement request not found" });
+                    }
+                }
+
+            } catch (err) {
+                console.log(err);
+                socket.emit('error', { message: err.message });
+            }
         }
-    }
 
-));
+    ));
 
-socket.on('disconnect', () => {
-    console.log('User disconnected');
-    // removeUser(socket.id);
-});
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+        // removeUser(socket.id);
+    });
 
 });
 

@@ -391,9 +391,11 @@ module.exports.publishArticle = expressAsyncHandler(
                 return;
             }
 
+            /*
             if (article.reviewer_id !== reviewer_id) {
                 return res.status(403).json({ message: "Article is not assigned to this reviewer" });
             }
+                */
             //const user = await User.findById(article.authorId);
             //if (!user) {
             // return res.status(404).json({ message: "Author not found" });
