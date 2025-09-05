@@ -901,7 +901,7 @@ io.on('connection', (socket) => {
             editRequest.pb_recordId,
             editRequest._id,
             "New feedback on your improvement: ",
-            comment.content,
+            editRequest.title,
         );
 
         // send mail
