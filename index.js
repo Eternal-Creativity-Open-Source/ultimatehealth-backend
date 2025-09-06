@@ -963,7 +963,7 @@ io.on('connection', (socket) => {
                     const article = await Article.findById(Number(articleId))
                         .populate({
                             path: 'review_comments',
-                            options: { sort: { created_at: -1 } }
+                            options: { sort: { createdAt: -1 } }
                         })
                         .exec();
 
@@ -979,7 +979,7 @@ io.on('connection', (socket) => {
 
                     const requests = await EditRequest.findById(requestId).populate({
                             path: 'editComments',
-                            options: { sort: { created_at: -1 } }
+                            options: { sort: { createdAt: -1 } }
                         }).exec();
                     if (requests && requests.editComments) {
                         requests.editComments = requests.editComments.filter(comment => !comment.is_removed);
