@@ -977,7 +977,10 @@ io.on('connection', (socket) => {
                     }
                 } else if (requestId) {
 
-                    const requests = await EditRequest.findById(requestId).populate('editComments').exec();
+                    const requests = await EditRequest.findById(requestId).populate({
+                            path: 'editComments',
+                            options: { sort: { created_at: -1 } }
+                        }).exec();
                     if (requests && requests.editComments) {
                         requests.editComments = requests.editComments.filter(comment => !comment.is_removed);
                         socket.emit('review-comments', requests.editComments);
