@@ -452,8 +452,8 @@ module.exports.detectContentLoss = expressAsyncHandler(
                 return res.status(400).json({ message: "Missing required fields, record id not found" });
             }
 
-            let original_content = await getHTMLFileContent('content', editRequest.pb_recordId);
-            let new_content = await getHTMLFileContent('edit_requests', editRequest.article_recordId);
+            let original_content = await getHTMLFileContent('edit_requests', editRequest.pb_recordId);
+            let new_content = await getHTMLFileContent('content', editRequest.article_recordId);
             // if (editRequest.article.content.endsWith('.html')) {
             //   original_content = await getContent(editRequest.article.content);
             //  }

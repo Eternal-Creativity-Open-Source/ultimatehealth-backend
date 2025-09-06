@@ -5,26 +5,11 @@
 
 let cachePBClient = null;
 
-const getHTMLFileContent = async (collectionName, recordIdOrSlug) => {
+const getHTMLFileContent = async (collectionName, recordId) => {
     const pb = await getPocketbaseClient();
     await authenticateAdmin(pb);
 
-    let record;
-    try {
-        // Try by ID first
-        record = await pb.collection(collectionName).getOne(recordIdOrSlug);
-    } catch (e) {
-        // If not found by ID, try by slug or other field
-        const resultList = await pb.collection(collectionName).getList(1, 1, {
-            filter: `slug = "${recordIdOrSlug}"`,
-        });
-
-        if (resultList.items.length === 0) {
-            return { htmlContent: "Not found", fileName: "Not found" };
-        }
-
-        record = resultList.items[0];
-    }
+    const record = await pb.collection(collectionName).getOne(recordId);
 
     const fileName = collectionName === 'content' ? record.html_file : record.edited_html_file;
 
@@ -34,7 +19,6 @@ const getHTMLFileContent = async (collectionName, recordIdOrSlug) => {
 
     return { htmlContent, fileName };
 }
-
 
 
 const authenticateAdmin = async (pb) => {
