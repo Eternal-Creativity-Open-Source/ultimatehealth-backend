@@ -437,47 +437,52 @@ const getIMPFile = expressAsyncHandler(
 // Admin app
 const publishImprovementFileFromPocketbase = expressAsyncHandler(
     async (req, res) => {
-
         const { record_id, article_id } = req.body;
 
         if (!record_id || !article_id) {
             return res.status(400).json({ message: 'Missing required fields: record_id, article_id' });
         }
 
-        try {
+        const tempFileName = `improvement_${Date.now()}.html`;
+        const tempFilePath = path.join(os.tmpdir(), tempFileName);
 
+        try {
             const pb = await getPocketbaseClient();
             await authenticateAdmin(pb);
-            const improvementRecord = await pb.collection('edit_requests').getOne(record_id);
 
-            if (!improvementRecord || !improvementRecord.edited_html_file) {
-                return res.status(404).json({ message: 'Record not found' });
+            let improvementRecord;
+            try {
+                improvementRecord = await pb.collection('edit_requests').getOne(record_id);
+            } catch (err) {
+              return;
             }
 
-            const fileUrl = pb.files.getURL(improvementRecord, improvementRecord.edited_html_file, { download: true });
-            const tempFilePath = path.join(os.tmpdir(), improvementRecord.edited_html_file);
+            if (!improvementRecord.edited_html_file) {
+                return res.status(400).json({ message: 'Improvement record has no HTML file to publish' });
+            }
 
+    
+            const fileUrl = pb.files.getUrl(improvementRecord, improvementRecord.edited_html_file, { download: true });
             const response = await axios.get(fileUrl, { responseType: 'stream' });
-            const writer = fs.createWriteStream(tempFilePath);
 
+            const writer = fs.createWriteStream(tempFilePath);
             await new Promise((resolve, reject) => {
                 response.data.pipe(writer);
                 writer.on('finish', resolve);
                 writer.on('error', reject);
             });
 
-            // Prepare formdata to upload to pocketbase
+  
             const formData = new FormData();
-
             const file = await fileFromPath(tempFilePath);
             formData.append('html_file', file);
 
             const record = await pb.collection('content').update(article_id, formData);
 
-            fs.unlinkSync(tempFilePath);
-
-            // delete record
             await pb.collection('edit_requests').delete(record_id);
+
+    
+            fs.unlinkSync(tempFilePath);
 
             return res.status(200).json({
                 message: 'Improvement published successfully',
@@ -485,13 +490,19 @@ const publishImprovementFileFromPocketbase = expressAsyncHandler(
                 html_file: record.html_file
             });
 
-
         } catch (err) {
-            console.log("Error publishing improvement file from pocketbase:", err);
+            console.log("❌ Error publishing improvement file from pocketbase:", err);
+
+            // 🧹 Always attempt cleanup
+            if (fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+            }
+
             return res.status(500).json({ message: 'Internal server error' });
         }
     }
-)
+);
+
 
 // Admin App
 
@@ -505,9 +516,17 @@ const deleteImprovementRecordFromPocketbase = expressAsyncHandler(
         }
         try {
 
-            const pb = getPocketbaseClient();
+            const pb = await getPocketbaseClient();
             await authenticateAdmin(pb);
-            const improvementRecord = await pb.collection('edit_requests').getOne(record_id);
+
+            
+            let improvementRecord;
+            try {
+                improvementRecord = await pb.collection('edit_requests').getOne(record_id);
+            } catch (err) {
+              return;
+            }
+           // const improvementRecord = await pb.collection('edit_requests').getOne(record_id);
 
             if (!improvementRecord) {
                 return res.status(404).json({ message: 'Record not found' });
