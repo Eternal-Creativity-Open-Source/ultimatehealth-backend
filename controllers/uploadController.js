@@ -415,8 +415,10 @@ const getIMPFile = expressAsyncHandler(
             }
             let result;
             if (recordid) {
+                console.log("Enter record id")
                 result = await getHTMLFileContent('edit_requests', recordid);
             } else {
+                console.log("Enter article")
                 result = await getHTMLFileContent('content', articleRecordId);
             }
 
