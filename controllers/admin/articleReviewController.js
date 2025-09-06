@@ -247,7 +247,7 @@ module.exports.submitReview = expressAsyncHandler(
                 return;
             }
 
-            if (article.reviewer_id !== reviewer._id) {
+            if (article.reviewer_id.toString() !== reviewer._id.toString()) {
                 res.status(403).json({ message: 'You are not authorized to access this article' });
             }
 

@@ -319,7 +319,7 @@ module.exports.submitReviewOnImprovement = expressAsyncHandler(
                 return;
             }
 
-            if (editRequest.reviewer_id !== reviewer._id) {
+            if (editRequest.reviewer_id.toString() !== reviewer._id.toString()) {
                 res.status(403).json({ message: 'You are not authorized to access this article' });
                 return;
             }

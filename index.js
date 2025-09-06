@@ -871,7 +871,7 @@ io.on('connection', (socket) => {
                         return;
                     }
 
-                    if (editRequest.reviewer_id !== reviewer._id) {
+                    if (editRequest.reviewer_id.toString() !== reviewer._id.toString()) {
                         socket.emit('error', { message: 'You are not authorized to access this article' });
                         return;
                     }
