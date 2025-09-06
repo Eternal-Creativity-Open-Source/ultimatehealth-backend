@@ -934,7 +934,6 @@ io.on('connection', (socket) => {
                             `An author has added a new note to the article titled ${editRequest.article.title}.`
                         );
 
-                        socket.emit('new-feedback', comment);
                     }
                 }
 
