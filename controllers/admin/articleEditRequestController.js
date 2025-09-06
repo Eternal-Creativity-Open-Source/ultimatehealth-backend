@@ -446,7 +446,9 @@ module.exports.detectContentLoss = expressAsyncHandler(
                 return res.status(403).json({ message: "The request has not been approved yet." });
             }
 
-            if (!editRequest.pb_record || !editRequest.article_recordId) {
+            //console.log("Editrequest Record id", editRequest);
+
+            if (!editRequest.pb_recordId || !editRequest.article_recordId) {
                 return res.status(400).json({ message: "Missing required fields, record id not found" });
             }
 
