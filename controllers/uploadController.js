@@ -448,7 +448,7 @@ const publishImprovementFileFromPocketbase = expressAsyncHandler(
 
             const pb = await getPocketbaseClient();
             await authenticateAdmin(pb);
-            const improvementRecord = await pb.collection('edit_requests').get(record_id);
+            const improvementRecord = await pb.collection('edit_requests').getOne(record_id);
 
             if (!improvementRecord || !improvementRecord.edited_html_file) {
                 return res.status(404).json({ message: 'Record not found' });
@@ -507,7 +507,7 @@ const deleteImprovementRecordFromPocketbase = expressAsyncHandler(
 
             const pb = getPocketbaseClient();
             await authenticateAdmin(pb);
-            const improvementRecord = await pb.collection('edit_requests').get(record_id);
+            const improvementRecord = await pb.collection('edit_requests').getOne(record_id);
 
             if (!improvementRecord) {
                 return res.status(404).json({ message: 'Record not found' });
