@@ -553,7 +553,7 @@ uploadRoute.post('/publish-improvement-from-pocketbase', adminAuthenticateToken,
 uploadRoute.get('/articles/get-article-content/:id', authenticateToken, controller.getPbFile);
 /**
  * @swagger
- * /articles/get-improve-content:
+ * /article/get-improve-content:
  *   get:
  *     summary: Get HTML content from improvement or published article
  *     description: >
