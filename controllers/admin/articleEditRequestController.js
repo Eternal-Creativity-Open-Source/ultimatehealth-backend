@@ -12,7 +12,7 @@ const statusEnum = require('../../utils/StatusEnum');
 const AdminAggregate = require('../../models/events/adminContributionEvent');
 const diff = require('diff');
 
-const getHTMLFileContent = require('../../utils/pocketbaseUtil');
+const {getHTMLFileContent} = require('../../utils/pocketbaseUtil');
 const { deleteFileFn } = require('../uploadController');
 // Flow
 
