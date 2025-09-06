@@ -549,7 +549,7 @@ module.exports.publishImprovement = expressAsyncHandler(
 
 
 
-            if (editRequest.reviewer_id.toString() !== reviewer_id) {
+            if (editRequest.reviewer_id.toString() !== reviewer_id.toString()) {
                 return res.status(403).json({ message: "Article is not assigned to this reviewer" });
             }
 

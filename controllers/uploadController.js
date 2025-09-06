@@ -446,7 +446,7 @@ const publishImprovementFileFromPocketbase = expressAsyncHandler(
 
         try {
 
-            const pb = getPocketbaseClient();
+            const pb = await getPocketbaseClient();
             await authenticateAdmin(pb);
             const improvementRecord = await pb.collection('edit_requests').get(record_id);
 
