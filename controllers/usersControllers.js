@@ -1243,7 +1243,7 @@ module.exports.updateUserContactDetails = expressAsyncHandler(
       }
 
       // Find the user by ID
-      const user = await User.findById(userId);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -1251,14 +1251,14 @@ module.exports.updateUserContactDetails = expressAsyncHandler(
       // Check if the email is already in use by another user (excluding the current user) contact_detail: {email_id:email},
       const emailExists = await User.findOne({
         email: email,
-        _id: { $ne: userId },
+        _id: { $ne: req.userId },
       });
       if (emailExists) {
         return res.status(400).json({ error: "Email already in use" });
       }
       const contactEmailExists = await User.findOne({
         "contact_detail.email_id": email,
-        _id: { $ne: userId },
+        _id: { $ne: req.userId },
       });
 
       if (contactEmailExists) {
@@ -1313,7 +1313,7 @@ module.exports.updateUserContactDetails = expressAsyncHandler(
 module.exports.updateUserProfessionalDetails = expressAsyncHandler(
   async (req, res) => {
     try {
-      const userId = req?.userId;
+      const userId = req.userId;
 
       const { specialization, qualification, experience } = req.body;
 
@@ -1325,7 +1325,7 @@ module.exports.updateUserProfessionalDetails = expressAsyncHandler(
       }
 
       // Find the user by ID
-      const user = await User.findById(userId);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
