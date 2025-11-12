@@ -156,7 +156,7 @@ npm install
 ### Swagger UI is available at:
 
 ```
-http://localhost:8082/docs
+https://uhsocial.in/docs
 
 ```
 
