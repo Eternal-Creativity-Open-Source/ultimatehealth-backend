@@ -16,6 +16,7 @@ const startConversation = expressAsyncHandler(
     async (req, res) => {
         try {
             const userId = req.userId;
+           // console.log("User id", req.userId);
             const { text } = req.body;
 
             if (!text) {
@@ -80,12 +81,16 @@ const loadConversations = expressAsyncHandler(
     async (req, res) => {
         try {
             const userId = req.userId;
+            console.log("req", req.userId);
 
             const user = await User.findById(userId);
+
+
+            console.log("User Conversation Id", user);
             if (!user || !user.conversationId) {
                 return res.json({ messages: [] });
             }
-
+           
             const messages = await Message.find({
                 conversationId: user.conversationId
             }).sort({ _id: 1 });

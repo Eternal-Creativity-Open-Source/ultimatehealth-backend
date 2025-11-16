@@ -61,6 +61,6 @@ router.post("/send", authToken, startConversation);
  *                   items:
  *                     $ref: '#/components/schemas/Message'
  */
-router.get("/messages", loadConversations);
+router.get("/messages", authToken, loadConversations);
 
 module.exports = router;
