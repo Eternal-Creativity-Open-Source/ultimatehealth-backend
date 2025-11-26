@@ -12,6 +12,7 @@ const messageSchema = new mongoose.Schema({
     ref: "Conversation",
     required: true
   },
+ 
 
   timestamp: { type: Number, default: () => Date.now() },
 });

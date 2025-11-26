@@ -99,21 +99,31 @@ const loadConversations = expressAsyncHandler(
     async (req, res) => {
         try {
             const userId = req.userId;
-            console.log("req", req.userId);
+           // console.log("req", req.userId);
 
             const user = await User.findById(userId);
 
-
-            console.log("User Conversation Id", user);
+           // console.log("User Conversation Id", user);
             if (!user || !user.conversationId) {
-                return res.json({ messages: [] });
+                return res.status(200).json({ messages: [] });
             }
 
             const messages = await Message.find({
                 conversationId: user.conversationId
             }).sort({ _id: 1 });
 
-            res.json({ success: true, messages });
+            const enhancedMessages = messages.map(msg => {
+                const m = msg.toObject();
+
+                if (m.role === "user") {
+                    m.userHandle = user.user_handle;       
+                    m.profileImage = user.Profile_image;   
+                }
+
+                return m;
+            });
+
+            res.json({ success: true, messages: enhancedMessages });
 
         } catch (err) {
             res.status(500).json({ success: false, error: err.message });
