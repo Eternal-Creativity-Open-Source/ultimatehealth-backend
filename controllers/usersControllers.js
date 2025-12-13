@@ -69,7 +69,7 @@ module.exports.register = expressAsyncHandler(
       const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
-      console.log("Verification token : ", verificationToken);
+    //  console.log("Verification token : ", verificationToken);
 
       // Create new unverified user
       const newUnverifiedUser = new UnverifiedUser({
