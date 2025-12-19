@@ -28,7 +28,7 @@ module.exports.register = expressAsyncHandler(
         contact_detail,
       } = req.body;
 
-      console.log("running");
+      //console.log("running");
       // Check for required fields
       if (!user_name || !user_handle || !email || !password) {
         return res
