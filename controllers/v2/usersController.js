@@ -1,17 +1,4 @@
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const User = require("../models/UserModel");
-const UnverifiedUser = require("../models/UnverifiedUserModel");
-const { verifyUser } = require("../middleware/authMiddleware");
-const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const moment = require("moment");
-const Article = require("../models/Articles");
-const adminModel = require("../models/admin/adminModel");
-const BlacklistedToken = require('../models/blackListedToken');
 const expressAsyncHandler = require("express-async-handler");
-require("dotenv").config();
-
 const {
   createUnverifiedUser,
   findUserById,
@@ -28,16 +15,23 @@ const {
   loginUser,
   deleteUserByEmail,
   followUser,
-  unfollowUser
+  unfollowUser,
+  getUserSocialData,
+  getUserArticles,
+  getUserLikeAndSaveArticleData,
+  checkEmailExists,
+  checkUserHandleExists
 } = require('../../services/db/userService');
 
 const { findAdminByEmail, findAdminByHandle, updateAdminOtp } = require('../../services/db/adminService');
-const { generateAccessToken, verifyToken } = require('../../services/security/tokenService');
 const { blackListToken } = require('../../services/db/dbTokenService');
+const { findArticleById, getArticleContributors } = require('../../services/db/articleService');
 
-const { findArticleById } = require('../../services/db/articleService');
+const { generateAccessToken, verifyToken } = require('../../services/security/tokenService');
+const { isSamePassword, generateHashPassword } = require("../../services/security/encryptService");
+
 const { sendOtpMail } = require("../emailservice");
-
+const { verifyUser } = require("../middleware/authMiddleware");
 
 module.exports.register = expressAsyncHandler(
   async (req, res) => {
@@ -76,9 +70,6 @@ module.exports.register = expressAsyncHandler(
       }
 
       // Generate a verification token
-
-      const jwt_secret = process.env.JWT_SECRET;
-
       const verificationToken = await createUnverifiedUser({
         user_name,
         user_handle,
@@ -90,7 +81,6 @@ module.exports.register = expressAsyncHandler(
         specialization,
         Years_of_experience,
         contact_detail,
-        jwt_secret
       });
 
       if (verificationToken == null) {
@@ -188,9 +178,6 @@ module.exports.getUserProfile = expressAsyncHandler(
   }
 )
 
-function generateOTP() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
 
 module.exports.sendOTPForForgotPassword = expressAsyncHandler(
   async (req, res) => {
@@ -208,7 +195,7 @@ module.exports.sendOTPForForgotPassword = expressAsyncHandler(
           .json({ message: "User with this email does not exist." });
       }
 
-      const otp = generateOTP();
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
       const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
       if (user) {
@@ -588,20 +575,11 @@ module.exports.follow = expressAsyncHandler(
 module.exports.getFollowers = expressAsyncHandler(
   async (req, res) => {
     const userId = req.userId;
-    const author = await User.findById(userId).
-      populate({
-        path: "followers",
-        select: "user_id user_name followers Profile_image",
-        match: {
-          isBannedUser: false,
-          isBlockUser: false
-        }
-      }).exec();
+    const author = await getUserSocialData(userId);
 
     if (!author) {
       return res.status(404).json({ error: "Author not found" });
     }
-
     if (author.followers) {
       author.followers = author.followers.filter(user => user !== null);
     }
@@ -612,15 +590,7 @@ module.exports.getFollowers = expressAsyncHandler(
 module.exports.getFollowings = expressAsyncHandler(
   async (req, res) => {
     const userId = req.userId;
-    const author = await User.findById(userId).
-      populate({
-        path: "followings",
-        select: "user_id user_name followers Profile_image",
-        match: {
-          isBannedUser: false,
-          isBlockUser: false
-        }
-      }).exec();
+    const author = await getUserSocialData(userId);
 
     if (!author) {
       return res.status(404).json({ error: "Author not found" });
@@ -631,3 +601,354 @@ module.exports.getFollowings = expressAsyncHandler(
     return res.status(200).json({ followers: author.followings });
   }
 )
+
+// GET socials
+// type : 1 for followers, 2 for followings, 3 for contributors
+module.exports.getSocials = expressAsyncHandler(
+  async (req, res) => {
+
+    const { type, articleId, social_user_id } = req.query;
+
+    if (articleId) {
+      const article = await getArticleContributors(Number(articleId));
+
+      if (!article) {
+        return res.status(404).json({ error: "Article not found" });
+      }
+
+      return res.status(200).json({ followers: article });
+    }
+    let id = social_user_id ? social_user_id : req.userId;
+
+    const author = getUserSocialData(id);
+    if (!author) {
+      return res.status(404).json({ error: "Author not found" });
+    }
+
+    if (Number(type) === 1) {
+      if (author.followers) {
+        author.followers = author.followers.filter(user => user !== null);
+      }
+      return res.status(200).json({ followers: author.followers });
+    }
+
+    else if (Number(type) === 2) {
+      if (author.followings) {
+        author.followings = author.followings.filter(user => user !== null);
+      }
+      return res.status(200).json({ followers: author.followings });
+    }
+    else {
+      return res.status(404).json({ error: "Invalid type" });
+    }
+  }
+)
+
+
+module.exports.getProfileImage = expressAsyncHandler(
+  async (req, res) => {
+    const userId = req.params.userId;
+    const author = await findUserById(userId);
+
+    if (!author) {
+      return res.status(404).json({ error: 'Author not found' });
+    }
+
+    return res.status(200).json({ profile_image: author.Profile_image });
+
+  }
+)
+
+// get User Articles,
+module.exports.getUserWithArticles = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const user = await getUserArticles(req.userId); // Populate  articles
+
+      if (!user) {
+        return res.status(400).json({ message: "user not found" });
+      }
+      return res.status(200).json({ message: "Articles", data: user });
+    } catch (error) {
+      console.log("Get User Articles Error", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+)
+
+// get user like and save articles
+module.exports.getUserLikeAndSaveArticles = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const user = await getUserLikeAndSaveArticleData(req.userId);
+
+      if (!user) {
+        return res.status(400).json({ message: "user not found" });
+      }
+
+      if (user.likedArticles) {
+        user.likedArticles = user.likedArticles.filter(article => article && article.authorId !== null);
+      }
+
+      if (user.savedArticles) {
+        user.savedArticles = user.savedArticles.filter(article => article && article.authorId !== null);
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Like and Save Articles", data: user });
+    } catch (error) {
+      console.log("Get User Articles Error", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+)
+
+
+module.exports.updateProfileImage = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const { profileImageUrl } = req.body;
+
+      if (!profileImageUrl) {
+        res
+          .status(400)
+          .json({ error: "User ID and profile image URL are required." });
+        return;
+      }
+
+      let user = await findUserById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked." });
+      }
+
+      // Update the profile image URL
+      user.Profile_image = profileImageUrl;
+      await user.save();
+
+      res.status(200).json({
+        message: "Profile image updated successfully.",
+        Profile_image: profileImageUrl,
+      });
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+)
+
+// get user details
+module.exports.getUserDetails = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const user = await getPublicProfile(req.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked" });
+      }
+
+      res.json({ status: true, profile: user });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+)
+
+// update user general details
+module.exports.updateUserGeneralDetails = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const userId = req?.userId;
+      const { username, userHandle, email, about } = req.body;
+      // Validate input fields
+      if (!username || !userHandle || !email || !about) {
+        return res
+          .status(400)
+          .json({ error: "Please provide all required fields" });
+      }
+
+      const emailExists = await checkEmailExists(email, userId);
+      if (emailExists) {
+        return res.status(400).json({ error: "Email already in use" });
+      }
+
+      const userHandleExists = await checkUserHandleExists(userHandle, userId);
+
+      if (userHandleExists) {
+        return res.status(400).json({ error: "User handle already in use" });
+      }
+
+      // Find the user by ID
+      const user = await findUserById(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked." });
+      }
+      // Update user details
+      user.user_name = username;
+      user.user_handle = userHandle;
+      user.email = email;
+      user.about = about;
+      await user.save();
+
+      res.status(200).json({ status: true, message: "User details updated successfully" });
+    } catch (error) {
+      console.error("Error during updating user details:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+)
+// update user contact details
+module.exports.updateUserContactDetails = expressAsyncHandler(
+  async (req, res) => {
+    try {
+
+      const { phone, email } = req.body;
+
+      // Validate input fields
+      if (!email || !phone) {
+        return res
+          .status(400)
+          .json({ error: "Please provide all required fields" });
+      }
+
+
+      const emailExists = await checkEmailExists(email, req.userId);
+
+      if (emailExists) {
+        return res.status(400).json({ error: "Email already in use" });
+      }
+
+      // Find the user by ID
+      const user = await findUserById(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked." });
+      }
+      // Update user details
+      user.contact_detail.email_id = email;
+      user.contact_detail.phone_no = phone;
+      await user.save();
+      // Respond with success
+      res.status(200).json({ status: true, message: "User contact updated successfully" });
+
+    } catch (error) {
+      console.error("Error during updating user details:", error);
+      // Handle general server errors
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+)
+
+
+// update user Professional details
+module.exports.updateUserProfessionalDetails = expressAsyncHandler(
+  async (req, res) => {
+    try {
+
+      const { specialization, qualification, experience } = req.body;
+
+      // Validate input fields
+      if (!specialization || !qualification || !experience) {
+        return res
+          .status(400)
+          .json({ error: "Please provide all required fields" });
+      }
+
+      // Find the user by ID
+      const user = await findUserById(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked." });
+      }
+      // Update user details
+      user.specialization = specialization;
+      user.qualification = qualification;
+      user.Years_of_experience = experience;
+      await user.save();
+
+      // Respond with success
+      res.status(200).json({ status: true, message: "User details updated successfully" });
+    } catch (error) {
+      console.error("Error during updating user details:", error);
+      // Handle general server errors
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+)
+
+// update user password
+module.exports.updateUserPassword = expressAsyncHandler(
+  async (req, res) => {
+    try {
+
+      const { old_password, new_password, userId } = req.body;
+
+      // Check if both old and new passwords are provided
+      if (!old_password || !new_password || !userId) {
+        return res.status(400).json({ error: "Missing passwords and user id" });
+      }
+
+      // Check if the new password is long enough
+      if (new_password.length < 6) {
+        return res.status(400).json({ error: "Password too short" });
+      }
+
+      // Find the user by ID
+      const user = await findUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.isBannedUser || user.isBlockUser) {
+        return res.status(403).json({ error: "User is banned or blocked." });
+      }
+
+      // Check if the old password matches the stored password
+      const isOldPasswordValid = await isSamePassword(
+        old_password,
+        user.password
+      );
+      if (!isOldPasswordValid) {
+        return res.status(401).json({ error: "Invalid old password" });
+      }
+
+      // Ensure the new password is not the same as the old password
+      const isSameAsOldPassword = await isSamePassword(
+        new_password,
+        user.password
+      );
+      if (isSameAsOldPassword) {
+        return res.status(400).json({ error: "Same as old password" });
+      }
+
+      const newHashedPassword = await generateHashPassword(new_password);
+
+      // Update the user's password
+      user.password = newHashedPassword;
+      await user.save();
+      res.json({ status: true, message: "Password updated" });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);

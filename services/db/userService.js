@@ -1,7 +1,7 @@
 const User = require("../../models/UserModel");
 const UnverifiedUser = require("../../models/UnverifiedUserModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const { generateAccessToken } = require("../security/tokenService");
+const {generateHashPassword} = require("../security/encryptService");
 
 
 const createUser = async ({
@@ -49,17 +49,10 @@ const createUnverifiedUser = async ({
     specialization,
     Years_of_experience,
     contact_detail,
-    jwt_secret
 }) => {
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Generate a verification token
-
-    const verificationToken = jwt.sign({ email }, jwt_secret, {
-        expiresIn: "1h",
-    });
+    const hashedPassword = await generateHashPassword(password);
+    const verificationToken = generateAccessToken({ email }, "1h");
 
     const newUser = new UnverifiedUser({
         user_name: user_name,
@@ -205,14 +198,11 @@ const checkExistingUser = async ({ email, user_handle }) => {
     return exitingEmail || existingUserHandle || existingUnverifiedEmail || existingUnverifiedByHandle;
 }
 
-const isSamePassword = async (userPassword, newPassword) => {
-    return await bcrypt.compare(userPassword, newPassword);
-}
+
 
 const updateUserPassword = async (user, newPassword) => {
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await generateHashPassword(newPassword);
     user.password = hashedPassword;
     user.otp = null;
     user.otpExpires = null;
@@ -264,6 +254,88 @@ const unfollowUser = async (userId, targetUserId) => {
     userToFollow.followerCount = Math.max(0, userToFollow.followerCount - 1);
     await userToFollow.save();
 }
+
+const getUserSocialData = async (userId) => {
+
+    const user = await User.findById(userId)
+        .populate({
+            path: "followings",
+            select: "user_id user_name followers Profile_image",
+            match: {
+                isBannedUser: false,
+                isBlockUser: false
+            }
+        })
+        .populate({
+            path: "followers",
+            select: "user_id user_name followers Profile_image",
+            match: {
+                isBannedUser: false,
+                isBlockUser: false
+            }
+        })
+        .exec();
+
+    return user;
+}
+
+const getUserArticles = async (userId) => {
+    const user = await User.findById(userId).populate("articles").exec();
+
+    if (!user) {
+        return null;
+    }
+    if (user.isBannedUser || user.isBlockUser) {
+        return null;
+    }
+    return user;
+}
+
+const getUserLikeAndSaveArticlesData = async (userId) => {
+
+    const user = await User.findById(userId)
+        .populate({
+            path: "likedArticles",
+            populate: {
+                path: "authorId",
+                match: {
+                    isBlockUser: false,
+                    isBannedUser: false
+                }
+            }
+        })
+        .populate({
+            path: "savedArticles",
+            populate: {
+                path: "authorId",
+                match: {
+                    isBlockUser: false,
+                    isBannedUser: false
+                }
+            }
+        });
+
+    return user;
+}
+
+const checkUserHandleExists = async (user_handle, user_id) => {
+
+    const userHandleExists = await User.findOne({
+        user_handle: user_handle,
+        _id: { $ne: user_id },
+    });
+    return userHandleExists;
+}
+
+const checkEmailExists = async (email, userId) => {
+    const emailExists = await User.findOne({
+        contact_detail: { email: email },
+        email: email,
+        _id: { $ne: userId },
+    });
+
+    return emailExists;
+}
 module.exports = {
     createUser,
     createUnverifiedUser,
@@ -276,13 +348,17 @@ module.exports = {
     checkExistingUser,
     getMyProfile,
     getPublicProfile,
-    isSamePassword,
     updateUserPassword,
     updateUserOtp,
     loginUser,
     deleteUserByEmail,
     followUser,
-    unfollowUser
+    unfollowUser,
+    getUserSocialData,
+    getUserArticles,
+    getUserLikeAndSaveArticlesData,
+    checkUserHandleExists,
+    checkEmailExists
 }
 // Left
 // 1. Update User

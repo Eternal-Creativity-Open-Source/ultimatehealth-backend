@@ -1153,7 +1153,7 @@ module.exports.getUserDetails = expressAsyncHandler(
 module.exports.updateUserGeneralDetails = expressAsyncHandler(
   async (req, res) => {
     try {
-      const userId = req?.user?.userId;
+      const userId = req?.userId;
       const { username, userHandle, email, about } = req.body;
 
       // Validate input fields
