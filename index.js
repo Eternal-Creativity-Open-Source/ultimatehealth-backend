@@ -99,7 +99,7 @@ app.get("/hello", (req, res) => {
     res.send('Hello World');
 });
 app.get('/', (req, res) => {
-   res.sendFile(path.join(__dirname,  "public", "home.html"));
+    res.sendFile(path.join(__dirname, "public", "home.html"));
 });
 
 
@@ -1009,10 +1009,32 @@ io.on('connection', (socket) => {
             try {
 
                 if (articleId) {
+                    // const article = await Article.findById(Number(articleId))
+                    //     .populate({
+                    //         path: 'review_comments',
+                    //         options: { sort: { createdAt: -1 } }
+                    //     })
+                    //     .exec();
+
                     const article = await Article.findById(Number(articleId))
                         .populate({
                             path: 'review_comments',
-                            options: { sort: { createdAt: -1 } }
+                            match: { is_removed: false },
+                            options: { sort: { createdAt: -1 } },
+                            populate: [
+                                {
+                                    path: 'userId',
+                                    select: 'user_handle Profile_image',
+                                    match: {
+                                        isBlockUser: false,
+                                        isBannedUser: false,
+                                    },
+                                },
+                                {
+                                    path: 'adminId',
+                                    select: 'user_handle Profile_avtar',
+                                },
+                            ],
                         })
                         .exec();
 
@@ -1026,10 +1048,33 @@ io.on('connection', (socket) => {
                     }
                 } else if (requestId) {
 
-                    const requests = await EditRequest.findById(requestId).populate({
-                        path: 'editComments',
-                        options: { sort: { createdAt: -1 } }
-                    }).exec();
+                    // const requests = await EditRequest.findById(requestId).populate({
+                    //     path: 'editComments',
+                    //     options: { sort: { createdAt: -1 } }
+                    // }).exec();
+
+                    const requests = await EditRequest.findById(requestId)
+                        .populate({
+                            path: 'editComments',
+                            match: { is_removed: false },
+                            options: { sort: { createdAt: -1 } },
+                            populate: [
+                                {
+                                    path: 'userId',
+                                    select: 'user_handle Profile_image',
+                                    match: {
+                                        isBlockUser: false,
+                                        isBannedUser: false,
+                                    },
+                                },
+                                {
+                                    path: 'adminId',
+                                    select: 'user_handle Profile_avtar',
+                                },
+                            ],
+                        })
+                        .exec();
+
                     if (requests && requests.editComments) {
                         requests.editComments = requests.editComments.filter(comment => !comment.is_removed);
                         socket.emit('review-comments', requests.editComments);
