@@ -180,18 +180,21 @@ const uploadFile = async (req, res) => {
             const params = {
                 Bucket: 'ultimate-health-new',
                 Key: `${file.originalname}`, // Keep original filename and extension
-               // Body: fs.createReadStream(file.path),
+                // Body: fs.createReadStream(file.path),
                 ContentType: file.mimetype
             };
 
             const command = new PutObjectCommand(params);
             //await s3Client.send(command);
-            // handle large file size 
-            const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
 
-            await axios.put(uploadUrl, fs.createReadStream(file.path), {
+            const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+
+            const buffer = fs.readFileSync(file.path);
+
+            await axios.put(uploadUrl, buffer, {
                 headers: {
                     'Content-Type': file.mimetype,
+                    'Content-Length': buffer.length,
                 },
                 maxBodyLength: Infinity,
             });
