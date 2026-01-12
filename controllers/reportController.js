@@ -617,7 +617,7 @@ module.exports.takeAdminActionOnReport = expressAsyncHandler(
       const details = {
         podcastId: report.podcastId ? report.podcastId._id : null,
         articleId: report.articleId ? report.articleId._id : null,
-        content: report.commentId ? report.commentId.content : report.articleId.title,
+        content: report.commentId ? report.commentId.content : report.articleId ? report.articleId.title : report.podcastId ? report.podcastId.title : null,
         commentId: report.commentId ? report.commentId._id : null,
       }
       const reportType = report.commentId ? 'comment' : 'content';
