@@ -716,6 +716,8 @@ module.exports.takeAdminActionOnReport = expressAsyncHandler(
             art.is_removed = true;
             art.reportId = report._id;
             await art.save();
+            // after removing the content aware user, and also make a section where
+            // users can view their removed contents with reasons and they can request for restore
           } else if (report.podcastId) {
 
             const p = await Podcast.findById(report.podcastId._id);

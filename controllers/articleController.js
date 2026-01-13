@@ -69,7 +69,7 @@ module.exports.createArticle = expressAsyncHandler(
 module.exports.getAllArticles = expressAsyncHandler(
   async (req, res) => {
 
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = 150 } = req.query;
     try {
 
       const query = {
