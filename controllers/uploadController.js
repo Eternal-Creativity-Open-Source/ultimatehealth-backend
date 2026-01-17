@@ -335,6 +335,63 @@ const uploadFileToPocketBase = expressAsyncHandler(
     }
 )
 
+const uploadHTMLToPocketBase = expressAsyncHandler(
+  async (req, res) => {
+    try {
+      const pb = await getPocketbaseClient();
+      await authenticateAdmin(pb);
+
+      const { record_id, title } = req.body;
+      const uploadedFile = req.file; 
+
+      if (!title && !uploadedFile) {
+        return res.status(400).send({ message: 'Please provide title and file' });
+      }
+
+     
+      const htmlContent = fs.readFileSync(uploadedFile.path, 'utf8');
+
+      
+      const fileName = `${title?.replace(/\s+/g, '_') || 'file'}.html`;
+      const filePath = path.join(os.tmpdir(), fileName);
+      fs.writeFileSync(filePath, htmlContent, 'utf8');
+
+      
+      const formData = new FormData();
+      formData.append('title', title || 'Untitled');
+      const file = await fileFromPath(filePath);
+      formData.append('html_file', file);
+
+     
+      let record;
+      if (record_id) {
+        record = await pb.collection('content').update(record_id, formData);
+
+        if (!record) {
+          return res.status(404).json({ message: 'Record not found' });
+        }
+      } else {
+        record = await pb.collection('content').create(formData);
+      }
+
+      // cleanup
+      fs.unlinkSync(filePath);
+      fs.unlinkSync(uploadedFile.path);
+
+      return res.status(200).json({
+        message: 'File uploaded successfully',
+        recordId: record.id,
+        html_file: record.html_file,
+      });
+    } catch (err) {
+      console.log("Error uploading file to pocketbase:", err);
+      return res.status(500).json({
+        message: 'Internal server error'
+      });
+    }
+  }
+);
+
 // User & Admin
 const getPbFile = expressAsyncHandler(
     async (req, res) => {
@@ -568,6 +625,7 @@ module.exports = {
     getFile,
     deleteFile,
     uploadFileToPocketBase,
+    uploadHTMLToPocketBase,
     getPbFile,
     getIMPFile,
     uploadImprovementFileToPocketbase,

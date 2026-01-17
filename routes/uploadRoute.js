@@ -184,7 +184,7 @@ uploadRoute.delete('/deleteFile/:key',authenticateToken, controller.deleteFile);
 
 /**
  * @swagger
- * /upload-pocketbase:
+ * /upload-pocketbase/article:
  *   post:
  *     summary: Upload article HTML content to PocketBase
  *     description: >
@@ -277,6 +277,102 @@ uploadRoute.delete('/deleteFile/:key',authenticateToken, controller.deleteFile);
 
 uploadRoute.post('/upload-pocketbase/article', authenticateToken, controller.uploadFileToPocketBase);
 
+/**
+ * @swagger
+ * /article/upload-pocketbase-file:
+ *   post:
+ *     summary: Upload article HTML file to PocketBase
+ *     description: |
+ *       Accepts an uploaded HTML file (`file` field) and stores it in PocketBase (`html_file` field).  
+ *       If a `record_id` is provided, updates the corresponding PocketBase record.  
+ *       Otherwise, creates a new record in the `content` collection.
+ *     tags:
+ *       - File Storage
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the article (used as the file name)
+ *                 example: "Welcome Page"
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: HTML file to upload
+ *               record_id:
+ *                 type: string
+ *                 description: Optional PocketBase record ID to update
+ *                 example: "rec_abc123xyz"
+ *     responses:
+ *       200:
+ *         description: Article file uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: File uploaded successfully
+ *                 recordId:
+ *                   type: string
+ *                   example: rec_abc123xyz
+ *                 html_file:
+ *                   type: string
+ *                   example: files/html/welcome_page.html
+ *                 htmlContent:
+ *                   type: string
+ *                   description: Extracted HTML content from the uploaded file
+ *       400:
+ *         description: Bad request - Missing both title and file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Please provide title and file
+ *       401:
+ *         description: Unauthorized - User authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized access
+ *       404:
+ *         description: Record to update not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Record not found
+ *       500:
+ *         description: Internal server error during upload
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+uploadRoute.post('/article/upload-pocketbase-file', authenticateToken, upload.single('file'), controller.uploadHTMLToPocketBase);
 /**
  * @swagger
  * /upload-pocketbase/improvement:
