@@ -6,6 +6,7 @@ const {
   Sendverifymail,
   resendVerificationEmail,
 } = require("../controllers/emailservice");
+const path = require("path");
 const authenticateToken = require("../middleware/adminAuthenticateToken");
 
 /**
