@@ -914,7 +914,7 @@ router.post("/user/verifypassword", verifyOtpForForgotPassword);
 /**
  * @swagger
  * /user/delete:
- *   delete:
+ *   post:
  *     summary: Delete user account
  *     description: |
  *       Permanently deletes the authenticated user's account.  

@@ -14,6 +14,7 @@ const Article = require('../../models/Articles');
 const statusEnum = require("../../utils/StatusEnum");
 const UnverifiedUser = require('../../models/UnverifiedUserModel');
 const AdminAggregate = require('../../models/events/adminContributionEvent');
+const { deleteFileFn } = require('../uploadController');
 
 
 module.exports.register = expressAsyncHandler(
@@ -144,14 +145,14 @@ module.exports.login = expressAsyncHandler(
 
       // Generate JWT Access Token
       const accessToken = jwt.sign(
-        { userId: user._id, email: user.email, role:'admin' },
+        { userId: user._id, email: user.email, role: 'admin' },
         process.env.JWT_SECRET,
         { expiresIn: "15m" } // Short-lived access token
       );
 
       // Generate Refresh Token
       const refreshToken = jwt.sign(
-        { userId: user._id, email: user.email , role:'admin'},
+        { userId: user._id, email: user.email, role: 'admin' },
         process.env.JWT_SECRET,
         { expiresIn: "7d" } // Longer-lived refresh token
       );
@@ -348,5 +349,51 @@ module.exports.logout = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-// Later: Delete  profile images from AWS
+
+module.exports.deleteAdmin = expressAsyncHandler(
+  async (req, res) => {
+
+    try {
+      const { password } = req.body;
+      const user = await admin.findById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.isVerified) {
+        return res
+          .status(403)
+          .json({ error: "Email not verified. Please check your email." });
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+      // delete profile image from aws
+      const avatar = user?.Profile_avtar;
+      if (
+        typeof avatar === "string" &&
+        avatar.trim() !== "" &&
+        !avatar.startsWith("http://") &&
+        !avatar.startsWith("https://") &&
+        !avatar.startsWith("//") &&
+        !avatar.startsWith("data:")
+      ) {
+        await deleteFileFn(avatar);
+      }
+
+      await admin.deleteOne({ email: user.email });
+
+      res.json({
+        status: true,
+        message: "account has been removed from database",
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+)
+
 
