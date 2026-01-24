@@ -1,315 +1,658 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Health - Empowering Wellness through Knowledge & Community</title>
-    <style>
-        /* --- CSS STYLES --- */
-        :root {
-          
-            --primary-blue: #007bff;
-            --dark-blue: #004080;  
-            --light-bg: #f8f9fa;   
-            --text-color: #343a40;  
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-            line-height: 1.6;
-            background-color: white;
-        }
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Ultimate Health</title>
+      <style>
+         :root {
+         --primary-blue: #007bff;
+         --dark-blue: #004080;
+         --light-bg: #f8f9fa;
+         --text-color: #343a40;
+         }
+         body {
+         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+         margin: 0;
+         padding: 0;
+         color: var(--text-color);
+         line-height: 1.6;
+         background-color: white;
+         }
+         .header {
+         background-color: white;
+         padding: 15px 0;
+         border-bottom: 1px solid #e9ecef;
+         }
+         .nav {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         }
+         .logo {
+         font-size: 1.5rem;
+         font-weight: 700;
+         color: var(--dark-blue);
+         text-decoration: none;
+         display: flex;
+         align-items: center;
+         }
+         /* Logo Image Styling */
+         .logo-icon img {
+         width: 32px; /* Adjusted size for visibility */
+         height: 32px;
+         margin-right: 8px;
+         }
+         /* --- HERO SECTION --- */
+         .hero {
+         background-color: var(--light-bg);
+         padding: 80px 0;
+         text-align: center;
+         }
+         .hero-content {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         }
+         .hero h1 {
+         font-size: 3rem;
+         color: var(--dark-blue);
+         margin-bottom: 15px;
+         font-weight: 800;
+         }
+         .hero p {
+         font-size: 1.25rem;
+         color: #6c757d;
+         max-width: 600px;
+         margin-bottom: 30px;
+         }
+         .container {
+         max-width: 1200px;
+         margin: auto;
+         padding: 0 20px;
+         }
+         section {
+         padding: 70px 0;
+         }
+         h2 {
+         text-align: center;
+         color: var(--dark-blue);
+         margin-bottom: 20px;
+         }
+         p.center {
+         text-align: center;
+         max-width: 700px;
+         margin: auto;
+         }
+         /* ---------------- BUTTONS ---------------- */
+         .store-buttons {
+         text-align: center;
+         margin-top: 20px;
+         }
+         .store-buttons a {
+         display: inline-block;
+         margin: 10px;
+         padding: 12px 25px;
+         border-radius: 8px;
+         border: 2px solid var(--primary-blue);
+         color: var(--primary-blue);
+         font-weight: 600;
+         text-decoration: none;
+         transition: 0.3s;
+         }
+         .store-buttons a:hover {
+         background: var(--primary-blue);
+         color: white;
+         }
+         /* ---------------- COLLAPSIBLE ---------------- */
+         details {
+         max-width: 1000px;
+         margin: 40px auto 0;
+         background: var(--light-bg);
+         padding: 25px;
+         border-radius: 12px;
+         }
+         summary {
+         font-size: 1.2rem;
+         font-weight: 700;
+         cursor: pointer;
+         color: var(--dark-blue);
+         }
+         /* ---------------- SCREENSHOTS ---------------- */
+         .screenshots {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         gap: 25px;
+         margin-top: 30px;
+         }
+         .screenshot-box {
+         height: 420px;
+         background: #e3e7eb;
+         border-radius: 18px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         color: #6c757d;
+         }
+         /* ---------------- FEATURES ---------------- */
+         .feature-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+         gap: 30px;
+         margin-top: 40px;
+         }
+         .feature-item {
+         background: var(--light-bg);
+         padding: 25px;
+         border-radius: 10px;
+         }
+         /* ---------------- PROGRAMS ---------------- */
+         .program-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+         gap: 25px;
+         margin-top: 40px;
+         }
+         .program-item {
+         background: white;
+         padding: 30px;
+         border-radius: 12px;
+         box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+         }
+         /* ---------------- MODAL ---------------- */
+         .modal {
+         display: none;
+         position: fixed;
+         inset: 0;
+         background: rgba(0,0,0,0.6);
+         align-items: center;
+         justify-content: center;
+         z-index: 1000;
+         }
+         .modal-content {
+         background: white;
+         padding: 35px;
+         border-radius: 12px;
+         max-width: 420px;
+         text-align: center;
+         }
+         /* ---------------- FOOTER & THANK YOU ---------------- */
+         footer {
+         background: #0f172a; /* Deep Navy */
+         color: #94a3b8;
+         padding: 80px 0 40px;
+         text-align: center;
+         }
+         .footer-content h2 {
+         color: var(--white);
+         margin-bottom: 20px;
+         }
+         .footer-note {
+         max-width: 600px;
+         margin: 0 auto 40px;
+         font-size: 1.1rem;
+         line-height: 1.8;
+         }
+         .heart {
+         color: #ef4444;
+         display: inline-block;
+         animation: heartbeat 1.5s infinite;
+         }
+         @keyframes heartbeat {
+         0% { transform: scale(1); }
+         50% { transform: scale(1.1); }
+         100% { transform: scale(1); }
+         }
+         .footer-bottom {
+         border-top: 1px solid #1e293b;
+         padding-top: 40px;
+         margin-top: 40px;
+         font-size: 0.875rem;
+         }
+         .footer-links {
+         display: flex;
+         justify-content: center;
+         gap: 24px;
+         margin-bottom: 20px;
+         }
+         .footer-links a {
+         color: #f8fafc;
+         text-decoration: none;
+         transition: var(--transition);
+         }
+         .footer-links a:hover {
+         color: var(--primary);
+         }
+         /* ---------------- PROGRAMS ---------------- */
+         .program-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+         gap: 30px;
+         margin-top: 40px;
+         }
+         .program-card {
+         background: var(--white);
+         border: 1px solid #e2e8f0;
+         border-radius: 20px;
+         padding: 30px;
+         display: flex;
+         flex-direction: column;
+         transition: var(--transition);
+         }
+         .program-card:hover {
+         box-shadow: var(--shadow);
+         transform: translateY(-5px);
+         }
+         .program-logo-wrapper {
+         height: 80px;
+         display: flex;
+         align-items: center;
+         margin-bottom: 20px;
+         }
+         .program-logo-wrapper img {
+         max-height: 100%;
+         max-width: 180px;
+         object-fit: contain;
+         }
+         .program-badge {
+         display: inline-block;
+         background: #f1f5f9;
+         color: var(--secondary);
+         font-size: 0.75rem;
+         font-weight: 700;
+         padding: 4px 12px;
+         border-radius: 99px;
+         margin-bottom: 12px;
+         text-transform: uppercase;
+         letter-spacing: 0.05em;
+         }
+         .program-card h3 {
+         font-size: 1.25rem;
+         margin-bottom: 12px;
+         color: var(--text-main);
+         }
+         .program-card p {
+         font-size: 0.95rem;
+         color: var(--secondary);
+         margin: 0;
+         line-height: 1.5;
+         }
+         /* ---------------- member SECTION ---------------- */
+         .member-section {
+         background-color: #fcfdfe;
+         border-top: 1px solid #edf2f7;
+         }
+         .mod-label {
+         display: inline-block;
+         background: #e0e7ff;
+         color: #4338ca;
+         font-weight: 700;
+         font-size: 0.75rem;
+         padding: 5px 15px;
+         border-radius: 50px;
+         margin-bottom: 15px;
+         text-transform: uppercase;
+         letter-spacing: 1px;
+         }
+         .mod-icon {
+         font-size: 2rem;
+         margin-bottom: 20px;
+         background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         }
+         .feature-card.mod-card {
+         border: 1px solid #eef2f6;
+         background: white;
+         }
+         .feature-card.mod-card:hover {
+         border-color: #6366f1;
+         box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.1);
+         }
+         /* ---------------- CONTACT SECTION ---------------- */
+         .contact-section {
+         text-align: center;
+         padding: 100px 0;
+         background: var(--white);
+         }
+         .social-links {
+         display: flex;
+         justify-content: center;
+         gap: 30px;
+         margin-top: 30px;
+         }
+         .social-icon {
+         width: 60px;
+         height: 60px;
+         border-radius: 50%;
+         background: var(--bg-light);
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 24px;
+         color: var(--text-main);
+         text-decoration: none;
+         transition: var(--transition);
+         border: 1px solid #e2e8f0;
+         }
+         /* Hover States */
+         .social-icon:hover {
+         transform: translateY(-5px);
+         background: var(--primary);
+         color: white;
+         border-color: var(--primary);
+         box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+         }
+         .contact-email:hover { background: #ea4335; border-color: #ea4335; }
+         .contact-github:hover { background: #24292e; border-color: #24292e; } 
+         .contact-linkedin:hover { background: #0077b5; border-color: #0077b5; } 
 
-        /* Utility Class for Layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(8px); /* Frosted glass effect */
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
 
-        /* --- HEADER & NAVIGATION --- */
-        .header {
-            background-color: white;
-            padding: 15px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 28px;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    @keyframes modalAppear {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark-blue);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-        
-        /* Logo Image Styling */
-        .logo-icon img {
-            width: 32px; /* Adjusted size for visibility */
-            height: 32px;
-            margin-right: 8px;
-        }
-        
-        /* --- HERO SECTION --- */
-        .hero {
-            background-color: var(--light-bg);
-            padding: 80px 0;
-            text-align: center;
-        }
+    .progress-container {
+      background: #f1f5f9;
+      height: 8px;
+      border-radius: 10px;
+      margin: 25px 0;
+      overflow: hidden;
+    }
 
-        .hero-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .progress-bar {
+      background: var(--primary);
+      width: 85%; /* Visual representation of readiness */
+      height: 100%;
+      border-radius: 10px;
+    }
 
-        .hero h1 {
-            font-size: 3rem;
-            color: var(--dark-blue);
-            margin-bottom: 15px;
-            font-weight: 800;
-        }
+    .waitlist-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-        .hero p {
-            font-size: 1.25rem;
-            color: #6c757d;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
+    .waitlist-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      outline: none;
+      font-family: inherit;
+    }
 
-        /* --- DOWNLOAD APP SECTION (CTA) & API DOC BUTTON STYLING --- */
-        .download-app, .api-docs-section {
-            background-color: white;
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        .download-app h2, .api-docs-section h2 {
-            font-size: 2rem;
-            color: var(--dark-blue);
-            margin-bottom: 25px;
-        }
-        
-        .store-buttons a, .api-docs-section a.cta-button {
-            display: inline-block;
-            margin: 10px;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        
-        /* Store button styles (Outline Blue) */
-        .store-buttons a {
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-        }
-        
-        .store-buttons a:hover {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-        
-        /* API Docs Button styles (Solid Primary Blue) */
-        .api-docs-section a.cta-button {
-            background-color: var(--primary-blue);
-            color: white;
-            border: 2px solid var(--primary-blue);
-            font-size: 1.1rem;
-            padding: 15px 35px; /* Larger button */
-        }
+    .waitlist-input:focus { border-color: var(--primary); }
 
-        .api-docs-section a.cta-button:hover {
-            background-color: var(--dark-blue);
-            border-color: var(--dark-blue);
-        }
-        
-        /* Optional: Add basic phone image placeholder */
-        .phone-mockup {
-            width: 100%;
-            max-width: 300px;
-            height: 400px;
-            background-color: #e3e7eb;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-        
-        /* --- FEATURES SECTION --- */
-        .features {
-            padding: 60px 0;
-            background-color: white;
-        }
-        
-        .features h2 {
-            text-align: center;
-            color: var(--dark-blue);
-            margin-bottom: 40px;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-item {
-            padding: 25px;
-            background: var(--light-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-        
-        .feature-item h3 {
-            color: var(--primary-blue);
-            font-size: 1.25rem;
-            margin-top: 15px;
-            min-height: 50px;
-        }
-        
-        /* --- FOOTER --- */
-        .footer {
-            background-color: var(--dark-blue);
-            color: white;
-            padding: 30px 0;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
-        .footer a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
-        }
+    .close-modal-btn {
+      margin-top: 15px;
+      background: transparent;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
 
-        /* --- RESPONSIVENESS (Mobile adjustments) --- */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 60px 0;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-            
-            .store-buttons a, .api-docs-section a.cta-button {
-                display: block;
-                margin: 10px auto;
-                max-width: 250px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <header class="header">
-        <div class="container nav">
+    .close-modal-btn:hover { color: var(--text-main); }
+      </style>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+   </head>
+   <body>
+      <header class="header">
+         <div class="container nav">
             <a href="#" class="logo">
-                <div class="logo-icon">
-                    <img src="https://raw.githubusercontent.com/SB2318/UltimateHealth/refs/heads/main/frontend/src/assets/adaptive-icon.png" alt="Ultimate Health Logo">
-                </div>
-                Ultimate Health
+               <div class="logo-icon">
+                  <img src="https://raw.githubusercontent.com/SB2318/UltimateHealth/refs/heads/main/frontend/src/assets/adaptive-icon.png" alt="Ultimate Health Logo">
+               </div>
+               Ultimate Health
             </a>
-            <nav>
-                <a href="#features" style="margin-right: 15px; text-decoration: none; color: var(--text-color);">Features</a>
-                <a href="#api-docs" style="margin-right: 15px; text-decoration: none; color: var(--text-color);">API</a>
-                <a href="#download" style="text-decoration: none; color: var(--text-color);">Download</a>
-            </nav>
-        </div>
-    </header>
-
-    <section class="hero">
-        <div class="container hero-content">
+         </div>
+      </header>
+      <section class="hero">
+         <div class="container hero-content">
             <h1>Empowering Wellness Through Global Community.</h1>
             <p>Ultimate Health is the first platform that lets you publish health knowledge in your own language, review content, and share podcasts with the world.</p>
-            
+         </div>
+      </section>
+      <!-- ================= DOWNLOAD – PLAY STORE ================= -->
+      <section>
+         <div class="container">
+            <h2>Download from Play Store</h2>
             <div class="store-buttons">
-                <a href="#app-store-link" class="btn-app-store">Download on the App Store</a>
-                <a href="#play-store-link" class="btn-play-store">Get it on Google Play</a>
+               <a href="https://play.google.com/store/apps/details?id=com.anonymous.UltimateHealth" target="_blank">UltimateHealth</a>
+               <a href="javascript:void(0)" onclick="openModal()">UHealth Admin (Coming Soon)</a>
             </div>
-            
-            <div class="phone-mockup">
-                [Insert your compelling App Screenshot/Mockup here]
+         </div>
+      </section>
+      <!-- ================= DOWNLOAD – APP STORE ================= -->
+      <section style="background:#f8f9fa">
+         <div class="container">
+            <h2>Download from App Store</h2>
+            <div class="store-buttons">
+               <a href="javascript:void(0)" onclick="openModal()">UltimateHealth (Coming Soon)</a>
+               <a href="javascript:void(0)" onclick="openModal()">UHealth Admin (Coming Soon)</a>
             </div>
-        </div>
-    </section>
-
-    <section class="features" id="features">
-        <div class="container">
+         </div>
+      </section>
+      <!-- ================= SCREENSHOTS ================= -->
+      <section>
+         <div class="container">
+            <h2>App Screenshots</h2>
+            <!-- UltimateHealth – OPEN BY DEFAULT -->
+            <details open>
+               <summary>UltimateHealth App</summary>
+               <div class="screenshots">
+                  <div class="screenshot-box">UltimateHealth Screenshot</div>
+                  <div class="screenshot-box">UltimateHealth Screenshot</div>
+                  <div class="screenshot-box">UltimateHealth Screenshot</div>
+               </div>
+            </details>
+            <!-- UHealth Admin – CLOSED BY DEFAULT -->
+            <details>
+               <summary>UHealth Admin App</summary>
+               <div class="screenshots">
+                  <div class="screenshot-box">Admin Screenshot</div>
+                  <div class="screenshot-box">Admin Screenshot</div>
+               </div>
+            </details>
+         </div>
+      </section>
+      <!-- ================= FEATURES (EXISTING) ================= -->
+      <section>
+         <div class="container">
             <h2>Be a Contributor: Core Community Features</h2>
             <div class="feature-grid">
-                
-                <div class="feature-item">
-                    <h3>🗣️ Multilingual Article Publishing</h3>
-                    <p>Contribute to the global knowledge base by **publishing health articles in your own mother language**, making wellness accessible to everyone.</p>
-                </div>
-                
-                <div class="feature-item">
-                    <h3>✍️ Collaborative Article Improvement</h3>
-                    <p>Help **improve existing health articles** through peer review and editing, ensuring information is accurate, relevant, and easy to understand.</p>
-                </div>
-                
-                <div class="feature-item">
-                    <h3>🎧 Publish Health Podcasts</h3>
-                    <p>Share your voice! Easily **publish podcasts** covering various health topics, connecting with the community through audio content.</p>
-                </div>
-                
-                <div class="feature-item">
-                    <h3>📈 Contribution Analysis</h3>
-                    <p>**Get a detailed analysis of your contributions** (articles, edits, podcasts), showing your impact on the community's overall wellness and knowledge.</p>
-                </div>
-                
+               <div class="feature-item">
+                  <h3>🗣️ Multilingual Article Publishing</h3>
+                  <p>Publish health articles in your own language.</p>
+               </div>
+               <div class="feature-item">
+                  <h3>✍️ Collaborative Article Improvement</h3>
+                  <p>Review and improve community-driven health content.</p>
+               </div>
+               <div class="feature-item">
+                  <h3>🎧 Publish Health Podcasts</h3>
+                  <p>Share verified health podcasts with the world.</p>
+               </div>
+               <div class="feature-item">
+                  <h3>📊 Contribution Analytics</h3>
+                  <p>Track your impact across articles, edits, and podcasts.</p>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="api-docs-section" id="api-docs">
-        <div class="container">
-            <h2>Developers & Partners</h2>
-            <p>Integrate health data or extend our content platform using our powerful and secure APIs. Build tools and services that leverage the Ultimate Health knowledge base.</p>
-            
-            <a href="https://uhsocial.in/docs/" class="cta-button">See API Documentation</a>
-        </div>
-    </section>
-
-    <section class="download-app" id="download">
-        <div class="container">
-            <h2>Ready to Join the Global Wellness Movement?</h2>
-            <p>Download the app today and start contributing to a healthier world.</p>
-            <div class="store-buttons">
-                <a href="#app-store-link" class="btn-app-store">Download on the App Store</a>
-                <a href="#play-store-link" class="btn-play-store">Get it on Google Play</a>
+            <!-- UHealth Admin features will be added later -->
+         </div>
+      </section>
+      <section class="member-section">
+         <div class="container">
+            <div style="text-align: center; margin-bottom: 60px;">
+               <h2>Be a member : Guardian of Content Integrity</h2>
             </div>
-        </div>
-    </section>
+            <div class="feature-grid">
+               <div class="feature-card mod-card">
+                  <i class="fas fa-sync-alt mod-icon"></i>
+                  <h3>Interactive Review</h3>
+                  <p>Manage the full lifecycle of content with a streamlined approval, rejection, and feedback loop for contributors.</p>
+               </div>
+               <div class="feature-card mod-card">
+                  <div class="mod-icon"><i class="fas fa-microchip"></i></div>
+                  <h3> Content Integrity</h3>
+                  <p>Leverage automated plagiarism and grammar engines to maintain professional clarity and originality scores.</p>
+               </div>
+               <div class="feature-card mod-card">
+                  <div class="mod-icon"><i class="fas fa-shield-check"></i></div>
+                  <h3>Visual Asset Audit (Coming soon)</h3>
+                  <p>Validation for image quality and automated compliance checks for brand logos and visual safety.</p>
+               </div>
+               <div class="feature-card mod-card">
+                  <div class="mod-icon"><i class="fas fa-gavel"></i></div>
+                  <h3>Community Safety</h3>
+                  <p>Investigate flagged content and manage user reports through a robust system designed to keep the platform safe.</p>
+               </div>
+               <div class="feature-card mod-card">
+                  <div class="mod-icon"><i class="fas fa-fingerprint"></i></div>
+                  <h3>Advanced Security</h3>
+                  <p>Role-based access control (RBAC) ensuring only verified Reviewers and Admins can access protected operations.</p>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- ================= PARTICIPATED PROGRAMS ================= -->
+      <section style="background:#f8f9fa">
+         <div class="container">
+            <p class="center">We actively collaborate with community, and open-source initiatives.</p>
+            <section style="background-color: var(--white);">
+               <div class="container">
+                  <div style="text-align: center; margin-bottom: 50px;">
+                     <img src="https://github.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/blob/master/Emojis/Hand%20gestures/Flexed%20Biceps.png?raw=true" width="45" height="45" alt="Flexed Biceps" style="margin-bottom: 10px;">
+                     <h2>Programs Participated In</h2>
+                     <p style="color: var(--secondary); max-width: 600px; margin: 0 auto;">We are proud to have collaborated with and contributed to these prestigious tech and open-source initiatives.</p>
+                  </div>
+                  <div class="program-grid">
+                     <div class="program-card">
+                        <div class="program-logo-wrapper">
+                           <img src="https://github.com/user-attachments/assets/e0a40d06-f5b8-42a7-a5a0-033280f842be" alt="IEEE IGDTUW Logo">
+                        </div>
+                        <span class="program-badge">Open Source Week</span>
+                        <h3>IEEE IGDTUW</h3>
+                        <p>A week-long intensive event aimed at fostering global collaboration and high-level skill-building in the open-source ecosystem.</p>
+                     </div>
+                     <div class="program-card">
+                        <div class="program-logo-wrapper">
+                           <img src="https://github.com/user-attachments/assets/2b03167c-a598-48be-9f93-66130e58ec00" alt="Vultr Logo">
+                        </div>
+                        <span class="program-badge">Cloud Hackathon</span>
+                        <h3>Vultr Cloud Innovate</h3>
+                        <p>Harnessing high-performance cloud infrastructure to develop scalable solutions for real-world problems using Vultr's computing and networking power.</p>
+                     </div>
+                     <div class="program-card">
+                        <div class="program-logo-wrapper">
+                           <img src="https://user-images.githubusercontent.com/63473496/153487849-4f094c16-d21c-463e-9971-98a8af7ba372.png" alt="GSSoC Logo">
+                        </div>
+                        <span class="program-badge">Summer 2024</span>
+                        <h3>GirlScript Summer of Code</h3>
+                        <p>A massive three-month initiative focused on bringing beginners into the world of open-source software development through expert mentorship.</p>
+                     </div>
+                  </div>
+               </div>
+            </section>
+         </div>
+      </section>
+      <section class="contact-section" id="contact">
+         <div class="container">
+            <h2>Connect With Us</h2>
+            <p style="color: var(--secondary); max-width: 500px; margin: 0 auto;">
+               Have questions or want to collaborate? Reach out to us through any of these platforms.
+            </p>
+            <div class="social-links">
+               <a href="https://github.com/SB2318" class="social-icon contact-github" target="_blank" title="GitHub">
+               <i class="fab fa-github"></i>
+               </a>
+               <a href="mailto:ultimate.health25@gmail.com" class="social-icon contact-email" title="Email Us">
+               <i class="fas fa-envelope"></i>
+               </a>
+               <a href="https://www.linkedin.com/in/ultimate-health-9290873a8/" class="social-icon contact-linkedin" target="_blank" title="LinkedIn">
+               <i class="fab fa-linkedin-in"></i>
+               </a>
+            </div>
+         </div>
+      </section>
+      <footer>
+         <div class="container">
+            <div class="footer-content">
+               <h2>A Heartfelt Thank You <span class="heart">❤️</span></h2>
+               <p class="footer-note">
+                  Ultimate Health exists because of people like you. To every contributor who translated an article, 
+                  every developer who squashed a bug, and every partner who believed in our mission—thank you for helping us build 
+                  a healthier, more informed world.
+               </p>
+               <div class="footer-links">
+                  <a href="https://github.com/SB2318" target="_blank">Github</a>
+                  <a href="https://uhsocial.in/docs" target="_blank">Documentation</a>
+                  <a href="https://github.com/SB2318/UltimateHealth?tab=coc-ov-file#" target="_blank">Community Guidelines</a>
+                  <a href="mailto:contact@ultimatehealth.com" target="_blank">Contact Us</a>
+               </div>
+               <div class="footer-bottom">
+                  <p>&copy; 2026 Ultimate Health. Built with passion for a healthier community.</p>
+               </div>
+            </div>
+         </div>
+      </footer>
+      <!-- ================= MODAL ================= -->
+      <div class="modal" id="comingSoonModal">
+  <div class="modal-content">
+    <div style="font-size: 3.5rem; margin-bottom: 10px;">🚀</div>
+    <h2 style="margin-bottom: 10px;">Launching Soon!</h2>
+    <p style="color: var(--secondary); font-size: 0.95rem;">
+      We're currently in final testing. We're <strong>85%</strong> of the way there!
+    </p>
 
-    <footer class="footer">
-        <div class="container">
-            &copy; 2025 Ultimate Health. All rights reserved. |
-            <a href="#">Privacy Policy</a> |
-            <a href="#">Terms of Service</a>
-        </div>
-    </footer>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
 
-</body>
+   
+     <button class="close-modal-btn" onclick="closeModal()">Close</button>
+    <!-- <div class="waitlist-form">
+         <p style="font-size: 0.9rem; font-weight: 600;">Want early access?</p>
+      <input type="email" placeholder="Enter your email" class="waitlist-input">
+      <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;" onclick="alert('Thanks for joining!')">Join</button>
+    </div>
+
+   
+  </div> -->
+</div>
+      <script>
+         function openModal() {
+           document.getElementById('comingSoonModal').style.display = 'flex';
+         }
+         function closeModal() {
+           document.getElementById('comingSoonModal').style.display = 'none';
+         }
+      </script>
+   </body>
 </html>
