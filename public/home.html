@@ -29,25 +29,22 @@
          justify-content: space-between;
          align-items: center;
          }
-         
          .logo {
-  display: inline-flex;
-  align-items: center;        
-  gap: 10px;                 
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  text-decoration: none;
-  line-height: 1;            
-}
-
-/* Logo Image Styling */
-.logo-icon img {
-  width: 52px;
-  height: 52px;
-  display: block;            
-}
-
+         display: inline-flex;
+         align-items: center;        
+         gap: 10px;                 
+         font-size: 1.5rem;
+         font-weight: 700;
+         color: var(--dark-blue);
+         text-decoration: none;
+         line-height: 1;            
+         }
+         /* Logo Image Styling */
+         .logo-icon img {
+         width: 52px;
+         height: 52px;
+         display: block;            
+         }
          /* --- HERO SECTION --- */
          .hero {
          background-color: var(--light-bg);
@@ -123,6 +120,70 @@
          cursor: pointer;
          color: var(--dark-blue);
          }
+         /* --- UPDATED SLIDER STYLING --- */
+         .screenshot-slider-container {
+         position: relative;
+         max-width: 1000px;
+         margin: 30px auto;
+         overflow: hidden;
+         }
+         .screenshots-wrapper {
+         display: flex;
+         overflow-x: auto;
+         scroll-snap-type: x mandatory;
+         scroll-behavior: smooth;
+         gap: 20px;
+         padding: 20px 0;
+         scrollbar-width: none; /* Hide scrollbar for Firefox */
+         }
+         .screenshots-wrapper::-webkit-scrollbar {
+         display: none; /* Hide scrollbar for Chrome/Safari */
+         }
+         .screenshot-box {
+         flex: 0 0 280px; /* Width of each slide */
+         height: 500px;
+         background: #e3e7eb;
+         border-radius: 25px;
+         scroll-snap-align: center;
+         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         overflow: hidden;
+         transition: transform 0.3s ease;
+         }
+         .screenshot-box:hover {
+         transform: translateY(-5px);
+         }
+         .screenshot-box img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         }
+         /* Slider Navigation Buttons */
+         .slider-nav {
+         display: flex;
+         justify-content: center;
+         gap: 15px;
+         margin-top: 20px;
+         }
+         .nav-btn {
+         background: var(--primary-blue);
+         color: white;
+         border: none;
+         width: 40px;
+         height: 40px;
+         border-radius: 50%;
+         cursor: pointer;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         transition: 0.3s;
+         }
+         .nav-btn:hover {
+         background: var(--dark-blue);
+         transform: scale(1.1);
+         }
          /* ---------------- SCREENSHOTS ---------------- */
          .screenshots {
          display: grid;
@@ -139,14 +200,13 @@
          justify-content: center;
          color: #6c757d;
          }
-
          .screenshot-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;           /* no distortion */
-  display: block;
-}
+         width: 100%;
+         height: 100%;
+         object-fit: contain;
+         object-position: center;           /* no distortion */
+         display: block;
+         }
          /* ---------------- FEATURES ---------------- */
          .feature-grid {
          display: grid;
@@ -191,7 +251,7 @@
          }
          /* ---------------- FOOTER & THANK YOU ---------------- */
          footer {
-         background: #0f172a; /* Deep Navy */
+         background: #0f172a; 
          color: #94a3b8;
          padding: 80px 0 40px;
          text-align: center;
@@ -310,7 +370,6 @@
          .mod-icon {
          font-size: 2rem;
          margin-bottom: 20px;
-        
          background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
          -webkit-background-clip: text;
          -webkit-text-fill-color: transparent;
@@ -361,79 +420,69 @@
          .contact-email:hover { background: #ea4335; border-color: #ea4335; }
          .contact-github:hover { background: #24292e; border-color: #24292e; } 
          .contact-linkedin:hover { background: #0077b5; border-color: #0077b5; } 
-
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.4);
-      backdrop-filter: blur(8px); /* Frosted glass effect */
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 40px;
-      border-radius: 28px;
-      max-width: 450px;
-      width: 100%;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes modalAppear {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .progress-container {
-      background: #f1f5f9;
-      height: 8px;
-      border-radius: 10px;
-      margin: 25px 0;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      background: var(--primary);
-      width: 85%; /* Visual representation of readiness */
-      height: 100%;
-      border-radius: 10px;
-    }
-
-    .waitlist-form {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .waitlist-input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      outline: none;
-      font-family: inherit;
-    }
-
-    .waitlist-input:focus { border-color: var(--primary); }
-
-    .close-modal-btn {
-      margin-top: 15px;
-      background: transparent;
-      border: none;
-      color: var(--secondary);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .close-modal-btn:hover { color: var(--text-main); }
+         .modal {
+         display: none;
+         position: fixed;
+         inset: 0;
+         background: rgba(15, 23, 42, 0.4);
+         backdrop-filter: blur(8px); /* Frosted glass effect */
+         align-items: center;
+         justify-content: center;
+         z-index: 2000;
+         padding: 20px;
+         }
+         .modal-content {
+         background: white;
+         padding: 40px;
+         border-radius: 28px;
+         max-width: 450px;
+         width: 100%;
+         text-align: center;
+         position: relative;
+         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+         animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+         }
+         @keyframes modalAppear {
+         from { transform: scale(0.8); opacity: 0; }
+         to { transform: scale(1); opacity: 1; }
+         }
+         .progress-container {
+         background: #f1f5f9;
+         height: 8px;
+         border-radius: 10px;
+         margin: 25px 0;
+         overflow: hidden;
+         }
+         .progress-bar {
+         background: var(--primary);
+         width: 85%; /* Visual representation of readiness */
+         height: 100%;
+         border-radius: 10px;
+         }
+         .waitlist-form {
+         display: flex;
+         gap: 10px;
+         margin-top: 20px;
+         }
+         .waitlist-input {
+         flex: 1;
+         padding: 12px 16px;
+         border: 1px solid #e2e8f0;
+         border-radius: 12px;
+         outline: none;
+         font-family: inherit;
+         }
+         .waitlist-input:focus { border-color: var(--primary); }
+         .close-modal-btn {
+         margin-top: 15px;
+         background: transparent;
+         border: none;
+         color: var(--secondary);
+         cursor: pointer;
+         font-weight: 600;
+         font-size: 0.9rem;
+         }
+         .close-modal-btn:hover { color: var(--text-main); }
       </style>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    </head>
@@ -481,25 +530,132 @@
             <!-- UltimateHealth – OPEN BY DEFAULT -->
             <details open>
                <summary>UltimateHealth App</summary>
-               <div class="screenshots">
-                  <div class="screenshot-box">
-                     <img src="/assets/article_home.jpeg" alt="UltimateHealth Screenshot 1"> 
+               <section>
+                  <div class="container">
+                     <h2>App Interface</h2>
+                     <p class="center">Take a look inside the Ultimate Health experience.</p>
+                     <div class="screenshot-slider-container">
+                        <div class="screenshots-wrapper" id="screenshotSlider">
+                           <div class="screenshot-box">
+                              <img src="/assets/article_home.jpeg" alt="Home Screen">
+                           </div>
+                           <div class="screenshot-box">
+                              <img src="/assets/article_listing.jpeg" alt="Article List">
+                           </div>
+                           <div class="screenshot-box">
+                              <img src="/assets/article_view.jpeg" alt="Reading View">
+                           </div>
+
+                            <div class="screenshot-box">
+                              <img src="/assets/article_writing_form.jpeg" alt="Writing Form">
+                           </div>
+                            <div class="screenshot-box">
+                              <img src="/assets/podcast_form.jpeg" alt="Podcast Form">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/podcast_listing.jpeg" alt="Podcast Listing">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/podcast_player.jpeg" alt="Podcast Player">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/podcast_recorder.jpeg" alt="Podcast Recorder">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/app_info_page.jpeg" alt="App Info">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/terms_cond_page.jpeg" alt="Terms And Condition">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/contributor_page.jpeg" alt="Contributors">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <div style="text-align:center; padding:20px;">
+                                 <i class="fas fa-mobile-alt" style="font-size:3rem; color:#cbd5e1;"></i>
+                                 <p>More Screens Coming Soon</p>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="slider-nav">
+                           <button class="nav-btn" onclick="moveSlider(-1)">
+                           <i class="fas fa-chevron-left"></i>
+                           </button>
+                           <button class="nav-btn" onclick="moveSlider(1)">
+                           <i class="fas fa-chevron-right"></i>
+                           </button>
+                        </div>
+                     </div>
                   </div>
-                  <div class="screenshot-box">
-                    <img src="/assets/article_listing.jpeg" alt="UltimateHealth Screenshot 2"> 
-                  </div>
-                  <div class="screenshot-box">
-                      <img src="/assets/article_view.jpeg" alt="UltimateHealth Screenshot 2"> 
-                  </div>
-               </div>
+               </section>
             </details>
             <!-- UHealth Admin – CLOSED BY DEFAULT -->
             <details>
                <summary>UHealth Admin App</summary>
-               <div class="screenshots">
-                  <div class="screenshot-box">Admin Screenshot</div>
-                  <div class="screenshot-box">Admin Screenshot</div>
-               </div>
+               <section>
+                  <div class="container">
+                     <h2>App Interface</h2>
+                     <p class="center">Take a look inside the Ultimate Health Admin experience.</p>
+                     <div class="screenshot-slider-container">
+                        <div class="screenshots-wrapper" id="screenshotSliderAdmin">
+                           <div class="screenshot-box">
+                              <img src="/assets/admin_dashboard.jpeg" alt="Admin Dashboard">
+                           </div>
+                           <div class="screenshot-box">
+                              <img src="/assets/admin_dashboard2.jpeg" alt="Admin Dashboard second">
+                           </div>
+                           <div class="screenshot-box">
+                              <img src="/assets/article_view_unassign.jpeg" alt="Article View Unassign">
+                           </div>
+
+                            <div class="screenshot-box">
+                              <img src="/assets/article_view_unassign1.jpeg" alt="Article View Unassign1">
+                           </div>
+                            <div class="screenshot-box">
+                              <img src="/assets/article_view_assign.jpeg" alt="Article View Assign">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/article_action.jpeg" alt="Article Action">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/podcast_action.jpeg" alt="Podcast Action">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <img src="/assets/podcast_live.jpeg" alt="Podcast Live State">
+                           </div>
+
+                            <div class="screenshot-box">
+                              <img src="/assets/admin_insights.jpeg" alt="Admin Insights">
+                           </div>
+
+                           <div class="screenshot-box">
+                              <div style="text-align:center; padding:20px;">
+                                 <i class="fas fa-mobile-alt" style="font-size:3rem; color:#cbd5e1;"></i>
+                                 <p>More Screens Coming Soon</p>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="slider-nav">
+                           <button class="nav-btn" onclick="moveAdminSlider(-1)">
+                           <i class="fas fa-chevron-left"></i>
+                           </button>
+                           <button class="nav-btn" onclick="moveAdminSlider(1)">
+                           <i class="fas fa-chevron-right"></i>
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+               </section>
             </details>
          </div>
       </section>
@@ -645,34 +801,49 @@
       </footer>
       <!-- ================= MODAL ================= -->
       <div class="modal" id="comingSoonModal">
-  <div class="modal-content">
-    <div style="font-size: 3.5rem; margin-bottom: 10px;">🚀</div>
-    <h2 style="margin-bottom: 10px;">Launching Soon!</h2>
-    <p style="color: var(--secondary); font-size: 0.95rem;">
-      We're currently in final testing. We're <strong>85%</strong> of the way there!
-    </p>
-
-    <div class="progress-container">
-      <div class="progress-bar"></div>
-    </div>
-
-   
-     <button class="close-modal-btn" onclick="closeModal()">Close</button>
-    <!-- <div class="waitlist-form">
-         <p style="font-size: 0.9rem; font-weight: 600;">Want early access?</p>
-      <input type="email" placeholder="Enter your email" class="waitlist-input">
-      <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;" onclick="alert('Thanks for joining!')">Join</button>
-    </div>
-
-   
-  </div> -->
-</div>
+      <div class="modal-content">
+         <div style="font-size: 3.5rem; margin-bottom: 10px;">🚀</div>
+         <h2 style="margin-bottom: 10px;">Launching Soon!</h2>
+         <p style="color: var(--secondary); font-size: 0.95rem;">
+            We're currently in final testing. We're <strong>85%</strong> of the way there!
+         </p>
+         <div class="progress-container">
+            <div class="progress-bar"></div>
+         </div>
+         <button class="close-modal-btn" onclick="closeModal()">Close</button>
+         <!-- <div class="waitlist-form">
+            <p style="font-size: 0.9rem; font-weight: 600;">Want early access?</p>
+            <input type="email" placeholder="Enter your email" class="waitlist-input">
+            <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;" onclick="alert('Thanks for joining!')">Join</button>
+            </div>
+            
+            
+            </div> -->
+      </div>
       <script>
          function openModal() {
            document.getElementById('comingSoonModal').style.display = 'flex';
          }
          function closeModal() {
            document.getElementById('comingSoonModal').style.display = 'none';
+         }
+         
+         function moveSlider(direction) {
+         const slider = document.getElementById('screenshotSlider');
+         const scrollAmount = 300; // Adjust based on box width + gap
+         slider.scrollBy({
+         left: direction * scrollAmount,
+         behavior: 'smooth'
+         });
+         }
+
+         function moveAdminSlider(direction) {
+         const slider = document.getElementById('screenshotSliderAdmin');
+         const scrollAmount = 300; // Adjust based on box width + gap
+         slider.scrollBy({
+         left: direction * scrollAmount,
+         behavior: 'smooth'
+         });
          }
       </script>
    </body>
