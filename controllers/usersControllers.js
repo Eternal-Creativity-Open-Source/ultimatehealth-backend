@@ -7,10 +7,11 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Article = require("../models/Articles");
+const Podcast = require("../models/Podcast");
 const adminModel = require("../models/admin/adminModel");
 const BlacklistedToken = require('../models/blackListedToken');
 const expressAsyncHandler = require("express-async-handler");
-const {sendContributorVerificationEmail} = require("./emailservice");
+const { sendContributorVerificationEmail } = require("./emailservice");
 require("dotenv").config();
 
 module.exports.register = expressAsyncHandler(
@@ -71,7 +72,7 @@ module.exports.register = expressAsyncHandler(
       const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
-    //  console.log("Verification token : ", verificationToken);
+      //  console.log("Verification token : ", verificationToken);
 
       // Create new unverified user
       const newUnverifiedUser = new UnverifiedUser({
@@ -96,7 +97,7 @@ module.exports.register = expressAsyncHandler(
       await newUnverifiedUser.save();
 
       // Send verification email
-      if(isContributor){
+      if (isContributor) {
         sendContributorVerificationEmail(email, password);
       }
       // sendVerificationEmail(email, verificationToken);
@@ -471,9 +472,9 @@ module.exports.login = expressAsyncHandler(
 
       // Generate Refresh Token
       const refreshToken = jwt.sign(
-        { userId: user._id, email: user.email, role:'user' },
+        { userId: user._id, email: user.email, role: 'user' },
         process.env.JWT_SECRET,
-        { expiresIn: "7d" } 
+        { expiresIn: "7d" }
       );
       console.log("Generated Token:", accessToken);
       console.log("Generated Refresh Token", refreshToken);
@@ -554,14 +555,14 @@ module.exports.refreshToken = expressAsyncHandler(
 
       // Generate a new access token
       const newAccessToken = jwt.sign(
-        { userId: user._id, email: user.email, role:'user' },
+        { userId: user._id, email: user.email, role: 'user' },
         process.env.JWT_SECRET,
         { expiresIn: "15m" }
       );
 
       // Optionally, generate a new refresh token
       const newRefreshToken = jwt.sign(
-        { userId: user._id, email: user.email, role:'user' },
+        { userId: user._id, email: user.email, role: 'user' },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -620,7 +621,15 @@ module.exports.deleteByUser = expressAsyncHandler(
         return res.status(401).json({ error: "Invalid password" });
       }
       console.log("email : ", email + " password  : ", password);
-      await User.deleteOne({ email });
+
+      // as of now hard delete
+      await Promise.all([
+        Article.deleteMany({ authorId: user._id }),
+        Podcast.deleteMany({ user_id: user._id }),
+        User.deleteOne({ _id: user._id }),
+      ]);
+
+      // await User.deleteOne({ email });
       res.json({
         status: true,
         message: "account has been removed from database",
@@ -832,25 +841,25 @@ module.exports.getSocials = expressAsyncHandler(
       return res.status(200).json({ followers: article.contributors });
     }
     let id = social_user_id ? social_user_id : req.userId;
-   
+
     const author = await User.findById(id)
-    .populate({
-     path: "followings",
-     select: "user_id user_name followers Profile_image",
-    match: {
-      isBannedUser: false,
-      isBlockUser: false
-    }
-  })
-  .populate({
-    path: "followers",
-    select: "user_id user_name followers Profile_image",
-    match: {
-      isBannedUser: false,
-      isBlockUser: false
-    }
-  })
-  .exec();
+      .populate({
+        path: "followings",
+        select: "user_id user_name followers Profile_image",
+        match: {
+          isBannedUser: false,
+          isBlockUser: false
+        }
+      })
+      .populate({
+        path: "followers",
+        select: "user_id user_name followers Profile_image",
+        match: {
+          isBannedUser: false,
+          isBlockUser: false
+        }
+      })
+      .exec();
 
 
     if (!author) {

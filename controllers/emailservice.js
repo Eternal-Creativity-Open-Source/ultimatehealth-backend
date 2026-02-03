@@ -66,7 +66,14 @@ const sendContributorVerificationEmail = (email, password) => {
           Please do not share it with anyone.
         </p>
 
-       
+        <h3>Install the UltimateHealth App</h3>
+        <p>
+          To access your dashboard and manage your contributions, install the
+          UltimateHealth app using the link below:
+        </p>
+        <p>
+          <a href="https://play.google.com/store/apps/details?id=com.anonymous.UltimateHealth" target="_blank">Install UltimateHealth App</a>
+        </p>
 
         <h3>Consent & Data Usage</h3>
         <p>
