@@ -101,6 +101,9 @@ router.get("/hello", (req, res) => {
  *               contact_detail:
  *                 type: string
  *                 example: "+1-202-555-0173"
+ *               isContributor:
+ *                 type: boolean
+ *                 example: false
  *     responses:
  *       201:
  *         description: Registration successful. Verification email sent.

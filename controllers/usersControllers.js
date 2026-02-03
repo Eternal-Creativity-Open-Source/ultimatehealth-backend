@@ -10,6 +10,7 @@ const Article = require("../models/Articles");
 const adminModel = require("../models/admin/adminModel");
 const BlacklistedToken = require('../models/blackListedToken');
 const expressAsyncHandler = require("express-async-handler");
+const {sendContributorVerificationEmail} = require("./emailservice");
 require("dotenv").config();
 
 module.exports.register = expressAsyncHandler(
@@ -26,6 +27,7 @@ module.exports.register = expressAsyncHandler(
         specialization,
         Years_of_experience,
         contact_detail,
+        isContributor
       } = req.body;
 
       //console.log("running");
@@ -94,6 +96,9 @@ module.exports.register = expressAsyncHandler(
       await newUnverifiedUser.save();
 
       // Send verification email
+      if(isContributor){
+        sendContributorVerificationEmail(email, password);
+      }
       // sendVerificationEmail(email, verificationToken);
 
       res.status(201).json({

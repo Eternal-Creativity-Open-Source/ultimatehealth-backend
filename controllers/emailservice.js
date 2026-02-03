@@ -38,6 +38,73 @@ const sendVerificationEmail = (email, token, isAdmin) => {
   });
 };
 
+const sendContributorVerificationEmail = (email, password) => {
+ // const verifyUrl = `${process.env.PROD_URL}/api/user/verifyEmail?token=${token}&isAdmin=${isAdmin}`;
+  const deleteAccountUrl = `https://uhsocial.in/api/delete-account`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Contribution Acknowledgement – UltimateHealth',
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2>Welcome to UltimateHealth 👋</h2>
+
+        <p>
+          This email serves as an acknowledgement that your articles and contributions
+          are going to be published soon on <strong>UltimateHealth</strong>.
+        </p>
+
+        <h3>Account Details</h3>
+        <ul>
+          <li><strong>Username:</strong> ${email}</li>
+          <li><strong>Password:</strong> ${password}</li>
+        </ul>
+
+        <p style="color: #555;">
+          Your password is securely stored and used only for authentication purposes.
+          Please do not share it with anyone.
+        </p>
+
+       
+
+        <h3>Consent & Data Usage</h3>
+        <p>
+          By continuing to use UltimateHealth, you consent to publishing your
+          contributions under your account. Public contributor information may be
+          collected from your GitHub account for attribution and verification purposes.
+        </p>
+
+        <h3>Account Deletion</h3>
+        <p>
+          Participation is voluntary. If you choose to discontinue, you may delete your
+          account using the link below. Please note that deleting your account will
+          permanently remove all your contributions from our platform.
+        </p>
+        <p>
+          <a href="${deleteAccountUrl}" target="_blank">Delete My Account</a>
+        </p>
+
+        <p>Thank you for contributing to UltimateHealth 🚀</p>
+
+        <p style="margin-top: 24px;">
+          — Team UltimateHealth
+        </p>
+      </div>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Verification email sent:', info.response);
+    }
+  });
+};
+
+
+
 const Sendverifymail = async (req, res) => {
   const { email, token, isAdmin } = req.body;
 
@@ -2526,7 +2593,8 @@ module.exports = {
   sendRestoreRequestDisapprovedMail,
   sendPodcastPublishedEmail,
   sendPodcastDiscardEmail,
-  sendOtpMail
+  sendOtpMail,
+  sendContributorVerificationEmail
 };
 
 
