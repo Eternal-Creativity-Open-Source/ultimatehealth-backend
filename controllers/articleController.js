@@ -688,7 +688,7 @@ module.exports.getAllTags = expressAsyncHandler(
       articles.forEach(article => {
 
         article.tags.forEach(tag => {
-          if (!tagIds.some(id => id.toString() === tagId.toString())) {
+          if (!tagIds.some(id => id.toString() === tag.toString())) {
             tagIds.push(tag);
           }
         })
