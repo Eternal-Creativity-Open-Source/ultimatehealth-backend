@@ -21,7 +21,7 @@ module.exports.shareArticle = expressAsyncHandler(async (req, res) => {
     if (!article || article.status !== statusEnum.PUBLISHED) {
       return res.status(404).json({ message: "Article not found" });
     }
-    const dynamicLink = `https://ultimatehealth.page.link/article?articleId=${article._id}&authorId=${authorId}&recordId=${recordId}`;
+    const dynamicLink = `https://uhsocial.in/api/share/article?articleId=${article._id}&authorId=${authorId}&recordId=${recordId}`;
 
     const htmlContent = generateProfessionalHTML(article, dynamicLink);
     res.setHeader("Content-Type", "text/html");
@@ -46,7 +46,7 @@ module.exports.sharePodcast = expressAsyncHandler(async (req, res) => {
     if (!podcast || podcast.status !== statusEnum.PUBLISHED) {
       return res.status(404).json({ message: "Podcast not found" });
     }
-    const dynamicLink = `https://ultimatehealth.page.link/podcast?trackId=${podcast._id}&audioUrl=${audioUrl}`;
+    const dynamicLink = `https://uhsocial.in/api/share/podcast?trackId=${podcast._id}&audioUrl=${audioUrl}`;
 
     const htmlContent = generatePodcastHTML(podcast, dynamicLink);
     res.setHeader("Content-Type", "text/html");

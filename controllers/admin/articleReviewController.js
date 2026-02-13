@@ -417,8 +417,10 @@ module.exports.publishArticle = expressAsyncHandler(
             await aggregate.save();
             
             const dynamicLink = `https://uhsocial.in/api/share/article?articleId=${article._id}&recordId=${article.pb_recordId}&authorId=${article.authorId._id}`;
+             
+            const blogLink = `https://uhsocial.in/api/share/blog/${article.pb_recordId}`;
             // send mail to user
-            sendArticlePublishedEmail(article.authorId.email, dynamicLink, article.title);
+            sendArticlePublishedEmail(article.authorId.email, blogLink, article.title);
 
             articleReviewNotificationsToUser(
                 article.authorId._id,
