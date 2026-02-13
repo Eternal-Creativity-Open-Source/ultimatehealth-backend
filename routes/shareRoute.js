@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { shareArticle, sharePodcast } = require("../controllers/shareController");
+const { shareArticle, sharePodcast, generateBlogPage } = require("../controllers/shareController");
 
 /**
  * @swagger
@@ -68,5 +68,6 @@ router.get("/share/article", shareArticle);
  *         description: Podcast not found
  */
 router.get("/share/podcast", sharePodcast);
+router.get("/share/blog/:slug", generateBlogPage);
 
 module.exports = router;
