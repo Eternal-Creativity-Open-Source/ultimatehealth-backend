@@ -73,7 +73,8 @@ module.exports.generateBlogPage = expressAsyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Article not found" });
     }
 
-    
+    article.viewCount += 1;
+    await article.save();
     const profileImageUrl = article.authorId.Profile_image && article.authorId.Profile_image.startsWith("https") ? article.authorId.Profile_image : `https://uhsocial.in/api/getfile/${article.authorId.Profile_image}`;
     const htmlRes = await getHTMLFileContent("content", slug);
 
@@ -259,6 +260,27 @@ function generateBlogContent(htmlContent, article, profileImageUrl) {
       opacity: 0.85;
     }
 
+  .view-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #f1f3f5;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+   }
+
+   .view-dot {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    }
+
+
   </style>
 </head>
 
@@ -270,6 +292,10 @@ function generateBlogContent(htmlContent, article, profileImageUrl) {
     <p class="publish-date">
       Published on ${moment(article.lastUpdated).format("MMMM D, YYYY")}
     </p>
+    <div class="view-counter">
+  <div class="view-dot"></div>
+  <span id="viewCount">${formatViewCount(article.viewCount)}</span> views
+</div>
 
     <div class="article-preview-wrapper">
 
@@ -523,6 +549,8 @@ function generatePodcastHTML(podcast, dynamicLink) {
         font-size: 14px;
         color: #888;
       }
+
+   
     </style>
   </head>
 
@@ -558,3 +586,15 @@ function generatePodcastHTML(podcast, dynamicLink) {
   </html>
   `;
 }
+
+function formatViewCount(num) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return num;
+}
+
+// By the way,  I will later give it a proper structure after 14th February, 2026. For now, I just want to make sure that the dynamic links are working and the content is being rendered properly on the webview. The code is a bit messy because of that, but it will be cleaned up soon.
