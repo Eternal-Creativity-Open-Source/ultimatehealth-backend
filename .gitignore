@@ -8,6 +8,7 @@ node_modules/
 package-lock.json
 
 ultimatehealth-firebase-adminsdk.json
+assetslink.json
 
 test.js
 #public/assets/

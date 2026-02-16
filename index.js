@@ -11,6 +11,7 @@ const {sendArticleFeedbackEmail}= require('./controllers/emailservice');
 const EditRequest = require('./models/admin/articleEditRequestModel');
 const Podcast = require('./models/Podcast');
 const statusEnum = require("./utils/StatusEnum");
+const assetLinks = require('./assetslink.json');
 
 const Article = require('./models/Articles');
 const User = require('./models/UserModel');
@@ -102,6 +103,10 @@ app.get("/hello", (req, res) => {
 });
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "public", "home.html"));
+});
+
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  res.status(200).json(assetLinks);
 });
 
 
