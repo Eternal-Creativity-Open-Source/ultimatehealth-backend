@@ -39,7 +39,7 @@ module.exports.createArticle = expressAsyncHandler(
 
 
       // Later will be there language schema check
-      const validTags = tags.map(tag => mongoose.Types.ObjectId(tag._id));
+      const validTags = tags.map(tag => new mongoose.Types.ObjectId(tag._id));
       // validate tags
       const validTagsFromDB = await ArticleTag.find({ _id: { $in: validTags } });
       if (validTags.length !== validTagsFromDB.length) {

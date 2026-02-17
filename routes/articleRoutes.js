@@ -341,7 +341,8 @@ router.delete('/articles/tags/:id', adminAuthenticateToken, articleController.de
  *               tags:
  *                 type: array
  *                 items:
- *                   type: '#/components/schemas/ArticleTag'
+ *                   type: object
+ *                   $ref: '#/components/schemas/ArticleTag'
  *                 description: A list of tags for the article (e.g., topics, categories).
  *               language:
  *                 type: string
