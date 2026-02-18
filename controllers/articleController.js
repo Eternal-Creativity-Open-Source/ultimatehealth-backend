@@ -14,7 +14,7 @@ module.exports.createArticle = expressAsyncHandler(
   async (req, res) => {
     try {
 
-      const { authorId, title, authorName, description, content, tags, imageUtils, pb_recordId, allow_podcast, language } = req.body; // Destructure required fields from req.body
+      const { authorId, title, authorName, description, content, tags, imageUtils, pb_recordId, allow_podcast, language = 'en-IN' } = req.body; // Destructure required fields from req.body
 
 
       if (!authorId || !title || !authorName || !description || !content
