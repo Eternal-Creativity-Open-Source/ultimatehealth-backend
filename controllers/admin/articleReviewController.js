@@ -403,6 +403,7 @@ module.exports.publishArticle = expressAsyncHandler(
             article.status = statusEnum.statusEnum.PUBLISHED;
             article.publishedDate = new Date();
             article.lastUpdated = new Date();
+            article.reviewer_id = reviewer_id;
 
             await article.save();
             // user.articles.push(article._id);
@@ -410,7 +411,7 @@ module.exports.publishArticle = expressAsyncHandler(
             await updateWriteEvents(article._id, article.authorId._id);
             // Update admin contribution for publish new article
             const aggregate = new AdminAggregate({
-                userId: article.reviewer_id,
+                userId: article.reviewer_id || reviewer_id,
                 contributionType: 1,
             });
 

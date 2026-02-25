@@ -67,7 +67,7 @@ module.exports.generateBlogPage = expressAsyncHandler(async (req, res) => {
 
   try {
 
-    const article = await Article.findOne({ pb_recordId: slug }).populate("authorId", "Profile_image user_name").exec();
+    const article = await Article.findOne({ pb_recordId: slug }).populate("authorId", "Profile_image user_name").populate("tags", "name").exec();
 
     if (!article || article.status !== statusEnum.PUBLISHED || article.isRemoved) {
       return res.status(404).json({ message: "Article not found" });
@@ -91,6 +91,13 @@ module.exports.generateBlogPage = expressAsyncHandler(async (req, res) => {
 
 
 function generateBlogContent(htmlContent, article, profileImageUrl, bannerImageUrl) {
+
+  const tagBadges = article.tags?.length
+  ? article.tags.map(tag =>
+      `<span class="category-badge">${tag.name}</span>`
+    ).join("")
+  : "";
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -136,14 +143,19 @@ body {
   color: white;
 }
 
+.category-wrapper {
+  margin-bottom: 20px;
+}
+
 .category-badge {
   display: inline-block;
-  background: #00a8e8;
+  background: rgba(0, 168, 232, 0.9);
   padding: 6px 14px;
   border-radius: 50px;
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 .hero h1 {
@@ -290,8 +302,11 @@ body {
 <section class="hero">
   <img src="${bannerImageUrl}" alt="Banner">
   <div class="hero-content">
-    <div class="category-badge">Health & Wellness</div>
-    <h1>${article.title}</h1>
+   
+  <h1>${article.title}</h1>
+  <div class="category-wrapper">
+   ${tagBadges}
+   </div>
     <div class="meta">
       Published on ${moment(article.lastUpdated).format("MMMM D, YYYY")}
     </div>
