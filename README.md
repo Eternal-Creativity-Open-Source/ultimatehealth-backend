@@ -1,6 +1,6 @@
 # UltimateHealth Backend (Open for all Learners, Free Resource)
 
-The repository is  the core engine powering the UltimateHealth platform. This backend service provides secure, and efficient APIs to support a seamless experience for users accessing trustable health resources and expert insights, built with Node js  and Express.✅💡. It uses MongoDB for data storage and JWT for secure authentication. 
+The repository is  the core engine powering the UltimateHealth platform. This backend service provides secure APIs to support a seamless experience for users accessing trustable health resources and expert insights, built with Node js  and Express.✅💡. It uses MongoDB for data storage and JWT for secure authentication. 
 
 
 ---
@@ -11,7 +11,7 @@ The repository is  the core engine powering the UltimateHealth platform. This ba
   ### ✅ Article CRUD with edit request workflows 
 
   Managing content at scale requires a clear and controlled workflow to ensure quality, accuracy, and accountability. 
-  This system outlines how articles are created, reviewed, and improved over time using a structured CRUD (Create, Read, Update, Delete) approach — enriched by an edit request mechanism, inspired by proven         practices at platforms.
+  This system outlines how articles are created, reviewed, and improved over time using a structured CRUD (Create, Read, Update, Delete) approach — enriched by an edit request mechanism, inspired by proven  practices at platforms.
 
     (a) Submit Article for Review Process
         To maintain content quality, all newly created articles must go through a structured review process before publication.
@@ -104,7 +104,6 @@ The repository is  the core engine powering the UltimateHealth platform. This ba
 - Node.js
 - Express.js
 - MongoDB + Mongoose
-- JSON Web Token (JWT)
 - Swagger (OpenAPI 3)
 - dotenv
 
@@ -135,7 +134,7 @@ ENDPOINT_URL = 'YOUR_ENDPOINT_URL';
 1. Clone the repository
    
 ```
-git clone https://github.com/SB2318/backend_ultimatehealth.git
+git clone https://github.com/Eternal-Creativity-Open-Source/backend_ultimatehealth.git
 cd your-backend-repo
 ```
 2. Install dependencies
@@ -166,5 +165,4 @@ Authorization: Bearer <your_jwt_token>
 
 ```
 
-## Contributors
-Available soon
+
