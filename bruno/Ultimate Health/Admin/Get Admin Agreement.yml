@@ -1,0 +1,15 @@
+info:
+  name: Get Admin Agreement
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v3/admin/agreements/019eb6f0-b40c-75ee-875d-7d628d69affe/agreement.pdf"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
